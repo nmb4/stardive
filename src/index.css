@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --page-bg: #f9f9fb;
+  --page-text: #09090b;
+  --radial-primary: radial-gradient(circle at 50% 0%, rgba(243, 244, 246, 1) 0%, rgba(249, 249, 251, 1) 60%);
+  --radial-secondary: radial-gradient(circle at 100% 100%, rgba(240, 241, 244, 1) 0%, rgba(249, 249, 251, 1) 50%);
+  --grid-line: rgba(9, 9, 11, 0.03);
+  --grid-mask-stop: 30%;
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(9, 9, 11, 0.06);
+  --glass-inner: rgba(255, 255, 255, 0.8);
+  --glass-shadow: rgba(9, 9, 11, 0.02);
+  --glass-hover-border: rgba(9, 9, 11, 0.15);
+  --glass-hover-inner: rgba(255, 255, 255, 0.9);
+  --glass-hover-shadow: rgba(9, 9, 11, 0.06);
+  --glass-hover-glow: rgba(9, 9, 11, 0.02);
+  --gradient-text-start: #09090b;
+  --gradient-text-end: #52525b;
+  --gradient-muted-start: #a1a1aa;
+  --gradient-muted-end: #d4d4d8;
+  --cube-top-start: #ffffff;
+  --cube-top-end: #f4f4f7;
+  --cube-left-start: #e4e4e7;
+  --cube-left-end: #d4d4d8;
+  --cube-right-start: #f4f4f5;
+  --cube-right-end: #e4e4e7;
+  --cube-edge: rgba(9, 9, 11, 0.18);
+  --cube-dot: #18181b;
+  --cube-base-top: #f4f4f5;
+  --cube-cast: #09090b;
+  --cube-cast-opacity: 0.05;
+  --cube-shadow-color: #09090b;
+  --cube-shadow-opacity: 0.06;
+  --cube-shadow-y: 15;
+  --cube-shadow-blur: 12;
+  --cube-drop-shadow: drop-shadow(0 20px 40px rgba(9, 9, 11, 0.08));
+}
+
+html.dark {
+  color-scheme: dark;
+  --page-bg: #020202;
+  --page-text: #f4f4f5;
+  --radial-primary: radial-gradient(circle at 50% 0%, rgba(20, 20, 24, 1) 0%, rgba(2, 2, 2, 1) 60%);
+  --radial-secondary: radial-gradient(circle at 100% 100%, rgba(15, 15, 18, 1) 0%, rgba(2, 2, 2, 1) 50%);
+  --grid-line: rgba(255, 255, 255, 0.02);
+  --grid-mask-stop: 20%;
+  --glass-bg: rgba(12, 12, 14, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-inner: rgba(255, 255, 255, 0.05);
+  --glass-shadow: rgba(0, 0, 0, 0.4);
+  --glass-hover-border: rgba(255, 255, 255, 0.15);
+  --glass-hover-inner: rgba(255, 255, 255, 0.1);
+  --glass-hover-shadow: rgba(0, 0, 0, 0.6);
+  --glass-hover-glow: rgba(255, 255, 255, 0.05);
+  --gradient-text-start: #ffffff;
+  --gradient-text-end: #a1a1aa;
+  --gradient-muted-start: #71717a;
+  --gradient-muted-end: #3f3f46;
+  --cube-top-start: #1a1a1e;
+  --cube-top-end: #0e0e11;
+  --cube-left-start: #111114;
+  --cube-left-end: #040405;
+  --cube-right-start: #08080a;
+  --cube-right-end: #000000;
+  --cube-edge: rgba(255, 255, 255, 0.4);
+  --cube-dot: #ffffff;
+  --cube-base-top: #0c0c0e;
+  --cube-cast: #000000;
+  --cube-cast-opacity: 0.6;
+  --cube-shadow-color: #000000;
+  --cube-shadow-opacity: 0.8;
+  --cube-shadow-y: 25;
+  --cube-shadow-blur: 20;
+  --cube-drop-shadow: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.9));
+}
+
+body {
+  background-color: var(--page-bg);
+  color: var(--page-text);
+  background-image: var(--radial-primary), var(--radial-secondary);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* Light technical grid background */
+.bg-grid {
+  background-size: 80px 80px;
+  background-image:
+    linear-gradient(
+      to right,
+      var(--grid-line) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      var(--grid-line) 1px,
+      transparent 1px
+    );
+  mask-image: radial-gradient(
+    ellipse at center,
+    black var(--grid-mask-stop),
+    transparent 80%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    black var(--grid-mask-stop),
+    transparent 80%
+  );
+}
+
+/* Light glassmorphism */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 1px var(--glass-inner),
+    0 20px 40px var(--glass-shadow);
+}
+
+.glass-card-hover {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card-hover:hover {
+  transform: translateY(-8px);
+  border-color: var(--glass-hover-border);
+  box-shadow:
+    inset 0 1px 1px var(--glass-hover-inner),
+    0 30px 60px var(--glass-hover-shadow),
+    0 0 40px var(--glass-hover-glow);
+}
+
+.text-gradient {
+  background: linear-gradient(180deg, var(--gradient-text-start) 0%, var(--gradient-text-end) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.text-gradient-dark {
+  background: linear-gradient(180deg, var(--gradient-muted-start) 0%, var(--gradient-muted-end) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.isometric-figure {
+  filter: var(--cube-drop-shadow);
+}
+
+/* Delay utilities */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }

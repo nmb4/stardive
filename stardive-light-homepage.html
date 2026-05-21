@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STARDIVE | Isometric Data Architecture</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        stardive: {
+                            base: '#fcfcfd',
+                            panel: 'rgba(255, 255, 255, 0.7)',
+                            border: 'rgba(9, 9, 11, 0.06)',
+                            text: '#09090b',
+                            muted: '#71717a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'float': 'float 8s cubic-bezier(0.37, 0, 0.63, 1) infinite',
+                        'float-delayed': 'float 8s cubic-bezier(0.37, 0, 0.63, 1) 4s infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow-shift': 'glowShift 10s ease-in-out infinite alternate',
+                        'fade-up': 'fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        glowShift: {
+                            '0%': { opacity: 0.15, transform: 'scale(1)' },
+                            '100%': { opacity: 0.35, transform: 'scale(1.2)' },
+                        },
+                        fadeUp: {
+                            '0%': { opacity: 0, transform: 'translateY(15px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f9f9fb;
+            color: #09090b;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(243, 244, 246, 1) 0%, rgba(249, 249, 251, 1) 60%),
+                radial-gradient(circle at 100% 100%, rgba(240, 241, 244, 1) 0%, rgba(249, 249, 251, 1) 50%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+        
+        /* Premium light technical grid background */
+        .bg-grid {
+            background-size: 80px 80px;
+            background-image: 
+                linear-gradient(to right, rgba(9, 9, 11, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(9, 9, 11, 0.03) 1px, transparent 1px);
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+        }
+
+        /* Pure Light Glassmorphism - optimized backdrop filter complexity */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(9, 9, 11, 0.06);
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.8),
+                0 20px 40px rgba(9, 9, 11, 0.01);
+        }
+
+        .glass-card-hover {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-6px);
+            border-color: rgba(9, 9, 11, 0.15);
+            box-shadow: 
+                inset 0 1px 1px rgba(255, 255, 255, 0.9),
+                0 25px 50px rgba(9, 9, 11, 0.04),
+                0 0 30px rgba(9, 9, 11, 0.01);
+        }
+
+        /* High-contrast Technical Gradients */
+        .text-gradient {
+            background: linear-gradient(180deg, #09090b 0%, #52525b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .text-gradient-dark {
+            background: linear-gradient(180deg, #a1a1aa 0%, #d4d4d8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Hardware Acceleration Optimization for floating components */
+        .accelerated-float {
+            will-change: transform;
+        }
+
+        /* Utilities */
+        .delay-100 { animation-delay: 80ms; }
+        .delay-200 { animation-delay: 160ms; }
+        .delay-300 { animation-delay: 240ms; }
+        .delay-400 { animation-delay: 320ms; }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-200 selection:text-zinc-950 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Custom Icons ---
+        const MenuIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
+        const ArrowRightIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>;
+        const TerminalIcon = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>;
+        const DatabaseIcon = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>;
+        const BoxIcon = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>;
+        const ExternalLinkIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>;
+
+        // --- Core Isometric Illustration Component (Light Alabaster/Slate Finish - Whisper Optimized) ---
+        const IsometricIllustration = () => {
+            const renderDots = (cx, cy) => {
+                const dots = [];
+                let key = 0;
+                for(let i = -1; i <= 2; i++) {
+                    for(let j = -1; j <= 2; j++) {
+                        if ((i === -1 && j === -1) || (i === 2 && j === 2)) continue; 
+                        const dotX = cx + 5.5 * i - 5.5 * j;
+                        const dotY = cy + 2.75 * i + 2.75 * j;
+                        dots.push(
+                            <circle key={key++} cx={dotX} cy={dotY} r="0.8" fill="#18181b" className="animate-pulse-slow" 
+                                    style={{ animationDelay: `${(i+j)*0.2}s`, opacity: Math.random() > 0.5 ? 0.8 : 0.2 }} />
+                        );
+                    }
+                }
+                return dots;
+            };
+
+            return (
+                <div className="relative w-full max-w-2xl mx-auto aspect-square flex items-center justify-center pointer-events-none select-none">
+                    <svg viewBox="0 0 500 500" className="w-full h-full">
+                        <defs>
+                            {/* Premium Minimal Matte Light Gradients */}
+                            <linearGradient id="topFace" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#ffffff" />
+                                <stop offset="100%" stopColor="#f4f4f7" />
+                            </linearGradient>
+                            <linearGradient id="leftFace" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor="#e4e4e7" />
+                                <stop offset="100%" stopColor="#d4d4d8" />
+                            </linearGradient>
+                            <linearGradient id="rightFace" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stopColor="#f4f4f5" />
+                                <stop offset="100%" stopColor="#e4e4e7" />
+                            </linearGradient>
+                        </defs>
+
+                        {/* Flat Vector shadow floor structure for flawless performance (0% CPU impact compared to SVG blur filters) */}
+                        <g fill="rgba(9, 9, 11, 0.04)" stroke="none">
+                            {/* Static Shadow bases for cubes */}
+                            <path d="M250,285 L300,310 L250,335 L200,310 Z" />
+                            <path d="M160,355 L210,380 L160,405 L110,380 Z" />
+                            <path d="M340,405 L390,430 L340,455 L290,430 Z" />
+                            <path d="M250,435 L300,460 L250,485 L200,460 Z" />
+                        </g>
+
+                        {/* Crisp, fine charcoal lines representing architectural blueprints */}
+                        <g stroke="rgba(9,9,11,0.18)" strokeWidth="0.8" strokeLinejoin="round" strokeLinecap="round">
+                            
+                            {/* 1. BACK CUBE (Tallest) */}
+                            <g transform="translate(0, -10)">
+                                <path d="M250,90 L300,115 L300,255 L250,280 L200,255 L200,115 Z" fill="url(#rightFace)" stroke="none" />
+                                <path d="M250,90 L300,115 L250,140 L200,115 Z" fill="url(#topFace)" />
+                                <path d="M250,140 L300,115 L300,255 L250,280 Z" fill="url(#rightFace)" />
+                                <path d="M200,115 L250,140 L250,280 L200,255 Z" fill="url(#leftFace)" />
+                                <g opacity="0.85">{renderDots(250, 115)}</g>
+                            </g>
+
+                            {/* 2. LEFT CUBE (Medium Tall) */}
+                            <g transform="translate(0, -10)">
+                                <path d="M160,180 L210,205 L210,325 L160,350 L110,325 L110,205 Z" fill="url(#rightFace)" stroke="none" />
+                                <path d="M160,180 L210,205 L160,230 L110,205 Z" fill="url(#topFace)" />
+                                <path d="M160,230 L210,205 L210,325 L160,350 Z" fill="url(#rightFace)" />
+                                <path d="M110,205 L160,230 L160,350 L110,325 Z" fill="url(#leftFace)" />
+                                <g opacity="0.85">{renderDots(160, 205)}</g>
+                            </g>
+
+                            {/* 3. RIGHT CUBE - BOTTOM SOLID BASE */}
+                            <g transform="translate(0, -10)">
+                                <path d="M340,250 L390,275 L390,375 L340,400 L290,375 L290,275 Z" fill="url(#rightFace)" stroke="none" />
+                                <path d="M340,250 L390,275 L340,300 L290,275 Z" fill="#f4f4f5" />
+                                <path d="M340,300 L390,275 L390,375 L340,400 Z" fill="url(#rightFace)" />
+                                <path d="M290,275 L340,300 L340,400 L290,375 Z" fill="url(#leftFace)" />
+                            </g>
+
+                            {/* 4. RIGHT CUBE - TOP FLOATING PART (Optimized & Accelerated) */}
+                            <g className="animate-float accelerated-float">
+                                {/* Vector path drop shadow - light, smooth, and instantly processed */}
+                                <path d="M340,265 L390,240 L340,255 L290,240 Z" fill="rgba(9,9,11,0.06)" stroke="none" />
+                                
+                                <path d="M340,170 L390,195 L390,225 L340,250 L290,225 L290,195 Z" fill="url(#rightFace)" stroke="none" />
+                                <path d="M340,170 L390,195 L340,220 L290,195 Z" fill="url(#topFace)" />
+                                <path d="M340,220 L390,195 L390,225 L340,250 Z" fill="url(#rightFace)" />
+                                <path d="M290,195 L340,220 L340,250 L290,225 Z" fill="url(#leftFace)" />
+                                <g opacity="0.85">{renderDots(340, 195)}</g>
+                            </g>
+
+                            {/* 5. FRONT CUBE (Lowest) */}
+                            <g transform="translate(0, -10)">
+                                <path d="M250,290 L300,315 L300,405 L250,430 L200,405 L200,315 Z" fill="url(#rightFace)" stroke="none" />
+                                <path d="M250,290 L300,315 L250,340 L200,315 Z" fill="url(#topFace)" />
+                                <path d="M250,340 L300,315 L300,405 L250,430 Z" fill="url(#rightFace)" />
+                                <path d="M200,315 L250,340 L250,430 L200,405 Z" fill="url(#leftFace)" />
+                                <g opacity="0.85">{renderDots(250, 315)}</g>
+                            </g>
+
+                        </g>
+                    </svg>
+                </div>
+            );
+        };
+
+        // --- Mock Dashboard Image Component ---
+        const MockDashboard = ({ type }) => {
+            if (type === 'analytics') {
+                return (
+                    <div className="w-full h-full bg-[#fcfcfd] p-6 flex flex-col gap-4 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-[40px] rounded-full"></div>
+                        <div className="flex justify-between items-center mb-2">
+                            <div className="w-24 h-3 bg-zinc-200 rounded-full"></div>
+                            <div className="w-8 h-3 bg-zinc-200 rounded-full"></div>
+                        </div>
+                        <div className="flex gap-4 mb-2">
+                            <div className="flex-1 h-16 bg-gradient-to-br from-zinc-50 to-zinc-100 rounded-xl border border-zinc-200/60"></div>
+                            <div className="flex-1 h-16 bg-gradient-to-br from-zinc-50 to-zinc-100 rounded-xl border border-zinc-200/60"></div>
+                            <div className="flex-1 h-16 bg-gradient-to-br from-zinc-50 to-zinc-100 rounded-xl border border-zinc-200/60"></div>
+                        </div>
+                        <div className="flex-1 bg-gradient-to-t from-zinc-100/55 to-transparent rounded-xl border border-zinc-200/60 relative flex items-end p-4">
+                            {/* Mock Bar Chart */}
+                            <div className="w-full flex justify-between items-end h-full gap-2 opacity-60">
+                                {[40, 70, 45, 90, 65, 85, 55, 100].map((h, i) => (
+                                    <div key={i} className="w-full bg-zinc-300 rounded-t-sm" style={{ height: `${h}%` }}></div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            return (
+                <div className="w-full h-full bg-[#fcfcfd] p-6 flex flex-col gap-4 relative overflow-hidden">
+                    <div className="absolute bottom-0 left-0 w-40 h-40 bg-emerald-500/5 blur-[50px] rounded-full"></div>
+                    <div className="flex gap-3 mb-4">
+                        <div className="w-3 h-3 rounded-full bg-zinc-200"></div>
+                        <div className="w-3 h-3 rounded-full bg-zinc-200"></div>
+                        <div className="w-3 h-3 rounded-full bg-zinc-200"></div>
+                    </div>
+                    <div className="space-y-3">
+                        <div className="w-3/4 h-2 bg-zinc-200 rounded-full"></div>
+                        <div className="w-1/2 h-2 bg-zinc-200 rounded-full"></div>
+                        <div className="w-5/6 h-2 bg-zinc-200 rounded-full"></div>
+                    </div>
+                    <div className="mt-auto p-4 bg-zinc-50/80 rounded-xl border border-zinc-200/60 font-mono text-[10px] text-zinc-500 leading-relaxed">
+                        &gt; initializing cluster network...<br/>
+                        &gt; verifying cryptographic hashes... [OK]<br/>
+                        &gt; connection established at 0.4ms
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Main App Component ---
+        const App = () => {
+            const [isScrolled, setIsScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    setIsScrolled(window.scrollY > 20);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    {/* Background Grid & Smooth Ambient Light Orbs */}
+                    <div className="fixed inset-0 bg-grid pointer-events-none z-[-2]"></div>
+                    <div className="fixed top-[10%] left-[-10%] w-[50%] h-[50%] bg-zinc-200/50 rounded-full blur-[140px] pointer-events-none z-[-1] animate-glow-shift"></div>
+                    <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-zinc-300/40 rounded-full blur-[120px] pointer-events-none z-[-1] animate-glow-shift" style={{animationDelay: '3s'}}></div>
+
+                    {/* Navigation */}
+                    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ease-out ${isScrolled ? 'bg-[#f9f9fb]/90 backdrop-blur-xl border-b border-zinc-200/50 py-4 shadow-sm' : 'bg-transparent py-8'}`}>
+                        <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer group">
+                                <div className="w-8 h-8 rounded-full border border-zinc-300 flex items-center justify-center bg-white group-hover:border-zinc-500 group-hover:shadow-[0_0_15px_rgba(9,9,11,0.05)] transition-all duration-200">
+                                    <div className="w-2 h-2 bg-zinc-900 rounded-full animate-pulse-slow shadow-[0_0_8px_rgba(9,9,11,0.4)]"></div>
+                                </div>
+                                <span className="font-display font-bold tracking-[0.25em] text-lg text-zinc-950">STARDIVE</span>
+                            </div>
+                            
+                            <nav className="hidden md:flex gap-10 text-sm font-mono text-zinc-500 tracking-wide">
+                                <a href="#architecture" className="hover:text-zinc-950 transition-colors duration-200">Architecture</a>
+                                <a href="#projects" className="hover:text-zinc-950 transition-colors duration-200">Constructs</a>
+                                <a href="#protocol" className="hover:text-zinc-950 transition-colors duration-200">Protocol</a>
+                            </nav>
+
+                            <div className="flex items-center gap-4">
+                                <button className="hidden md:flex items-center gap-2 font-mono text-xs border border-zinc-200 hover:border-zinc-400 px-6 py-2.5 rounded-full transition-all duration-200 text-zinc-800 bg-white hover:bg-zinc-50 backdrop-blur-md shadow-sm group">
+                                    Init Sequence
+                                    <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full group-hover:bg-emerald-500 transition-colors"></span>
+                                </button>
+                                <button className="md:hidden p-2 text-zinc-500 hover:text-zinc-950 bg-white rounded-full border border-zinc-200 backdrop-blur-md">
+                                    <MenuIcon />
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Hero Section */}
+                    <main className="flex-grow flex items-center pt-32 pb-20">
+                        <div className="max-w-7xl mx-auto px-6 md:px-12 w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                            
+                            {/* Left: Copy */}
+                            <div className="order-2 lg:order-1 flex flex-col gap-8 z-10 relative">
+                                
+                                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 border border-zinc-200 rounded-full w-fit bg-white/60 backdrop-blur-md shadow-sm opacity-0 animate-fade-up">
+                                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                                    <span className="font-mono text-xs text-zinc-600 tracking-widest uppercase">System Online v2.4</span>
+                                </div>
+
+                                <h1 className="text-6xl md:text-[5.5rem] font-display font-bold tracking-tight text-zinc-950 leading-[1.05] opacity-0 animate-fade-up delay-100">
+                                    <span className="text-gradient">Structure.</span><br/>
+                                    <span className="text-gradient-dark italic pr-4 font-semibold">Void.</span><br/>
+                                    <span className="text-gradient">Order.</span>
+                                </h1>
+                                
+                                <p className="text-lg text-zinc-500 max-w-md leading-relaxed font-light tracking-wide opacity-0 animate-fade-up delay-200">
+                                    Build the impossible with isometric precision. STARDIVE offers fluid infrastructure for deep-data storage and frictionless spatial computing.
+                                </p>
+                                
+                                <div className="flex flex-wrap gap-5 pt-4 opacity-0 animate-fade-up delay-300">
+                                    <button className="flex items-center gap-2 bg-zinc-950 text-white px-8 py-4 font-semibold text-sm rounded-full hover:scale-105 hover:bg-zinc-800 hover:shadow-[0_10px_30px_rgba(9,9,11,0.15)] transition-all duration-200 ease-out">
+                                        Deploy Node <ArrowRightIcon />
+                                    </button>
+                                    <button className="flex items-center gap-2 px-8 py-4 font-mono text-sm border border-zinc-200 text-zinc-600 hover:text-zinc-950 hover:border-zinc-400 hover:bg-zinc-50 backdrop-blur-md transition-all duration-200 ease-out rounded-full shadow-sm">
+                                        Read Documentation
+                                    </button>
+                                </div>
+                                
+                                {/* Trusted By / Stats */}
+                                <div className="flex flex-col gap-4 pt-12 mt-4 opacity-0 animate-fade-up delay-400">
+                                    <div className="text-[10px] text-zinc-400 font-mono uppercase tracking-[0.2em]">Trusted by deep-tech pioneers</div>
+                                    <div className="flex gap-8 items-center text-zinc-400 font-display font-bold text-xl tracking-tighter opacity-70 grayscale">
+                                        <div>ACME_CORP</div>
+                                        <div>NEXUS</div>
+                                        <div>VOID_SYS</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right: Illustration - Hidden on Mobile/Tablets, Visible on Desktop (lg) */}
+                            <div className="hidden lg:block order-1 lg:order-2 w-full relative opacity-0 animate-fade-up delay-200">
+                                <IsometricIllustration />
+                            </div>
+                        </div>
+                    </main>
+
+                    {/* Features/Architecture Section */}
+                    <section id="architecture" className="py-32 relative z-10">
+                        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-zinc-200 to-transparent"></div>
+                        
+                        <div className="max-w-7xl mx-auto px-6 md:px-12">
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
+                                <div className="max-w-2xl">
+                                    <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-zinc-950 mb-6">Architectural Fluidity.</h2>
+                                    <p className="text-lg text-zinc-500 font-light leading-relaxed">Our isometric vault clusters are designed with frictionless boundaries, ensuring seamless data flow even in hostile network environments.</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                {/* Feature 1 */}
+                                <div className="glass-panel glass-card-hover p-10 rounded-[2rem] group cursor-default">
+                                    <div className="w-14 h-14 rounded-full border border-zinc-200 bg-white flex items-center justify-center text-zinc-600 mb-8 group-hover:text-zinc-950 group-hover:border-zinc-400 group-hover:bg-zinc-50 transition-all duration-300 shadow-sm">
+                                        <BoxIcon />
+                                    </div>
+                                    <h3 className="text-xl font-display font-semibold text-zinc-950 mb-4 tracking-tight">Modular Synthesis</h3>
+                                    <p className="text-zinc-500 leading-relaxed font-light text-sm">
+                                        Deploy isolated architectural blocks. Stack, scale, and reorganize data structures with frictionless transitions and zero downtime.
+                                    </p>
+                                </div>
+
+                                {/* Feature 2 */}
+                                <div className="glass-panel glass-card-hover p-10 rounded-[2rem] group cursor-default">
+                                    <div className="w-14 h-14 rounded-full border border-zinc-200 bg-white flex items-center justify-center text-zinc-600 mb-8 group-hover:text-zinc-950 group-hover:border-zinc-400 group-hover:bg-zinc-50 transition-all duration-300 shadow-sm">
+                                        <DatabaseIcon />
+                                    </div>
+                                    <h3 className="text-xl font-display font-semibold text-zinc-950 mb-4 tracking-tight">Void Storage</h3>
+                                    <p className="text-zinc-500 leading-relaxed font-light text-sm">
+                                        Data is fluidly distributed across isometric planes. Perfect cryptographic darkness wrapped in a seamless access protocol.
+                                    </p>
+                                </div>
+
+                                {/* Feature 3 */}
+                                <div className="glass-panel glass-card-hover p-10 rounded-[2rem] group cursor-default">
+                                    <div className="w-14 h-14 rounded-full border border-zinc-200 bg-white flex items-center justify-center text-zinc-600 mb-8 group-hover:text-zinc-950 group-hover:border-zinc-400 group-hover:bg-zinc-50 transition-all duration-300 shadow-sm">
+                                        <TerminalIcon />
+                                    </div>
+                                    <h3 className="text-xl font-display font-semibold text-zinc-950 mb-4 tracking-tight">Command Protocol</h3>
+                                    <p className="text-zinc-500 leading-relaxed font-light text-sm">
+                                        Interact with your clusters via our low-level API or the tactile terminal interface. Built for absolute, smooth control.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Deployed Constructs Section */}
+                    <section id="projects" className="py-32 relative z-10 bg-[#fafafc]">
+                        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-zinc-200 to-transparent"></div>
+                        
+                        <div className="max-w-7xl mx-auto px-6 md:px-12">
+                            <div className="mb-16">
+                                <div className="inline-flex items-center gap-2 mb-4">
+                                    <span className="w-2 h-px bg-zinc-400"></span>
+                                    <span className="font-mono text-xs text-zinc-400 tracking-widest uppercase">Deployed Constructs</span>
+                                </div>
+                                <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-zinc-950 mb-6">Systems in the Void.</h2>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Project Card 1 */}
+                                <div className="group rounded-[2rem] overflow-hidden bg-white border border-zinc-200/80 hover:border-zinc-400 hover:shadow-md transition-all duration-300">
+                                    {/* Mock Image Wrapper */}
+                                    <div className="aspect-[4/3] w-full bg-[#fcfcfd] relative overflow-hidden border-b border-zinc-200/80">
+                                        <div className="absolute inset-0 opacity-70 group-hover:opacity-100 transition-opacity duration-300">
+                                            <MockDashboard type="analytics" />
+                                        </div>
+                                    </div>
+                                    <div className="p-8 flex justify-between items-end">
+                                        <div>
+                                            <h3 className="text-2xl font-display font-semibold text-zinc-950 mb-2 group-hover:text-zinc-700 transition-colors duration-200">Project Nexus</h3>
+                                            <p className="text-zinc-500 font-light text-sm">Real-time deep data telemetry platform.</p>
+                                        </div>
+                                        <button className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-600 group-hover:bg-zinc-950 group-hover:text-white transition-all duration-200">
+                                            <ExternalLinkIcon />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Project Card 2 */}
+                                <div className="group rounded-[2rem] overflow-hidden bg-white border border-zinc-200/80 hover:border-zinc-400 hover:shadow-md transition-all duration-300">
+                                    {/* Mock Image Wrapper */}
+                                    <div className="aspect-[4/3] w-full bg-[#fcfcfd] relative overflow-hidden border-b border-zinc-200/80">
+                                        <div className="absolute inset-0 opacity-70 group-hover:opacity-100 transition-opacity duration-300">
+                                            <MockDashboard type="terminal" />
+                                        </div>
+                                    </div>
+                                    <div className="p-8 flex justify-between items-end">
+                                        <div>
+                                            <h3 className="text-2xl font-display font-semibold text-zinc-950 mb-2 group-hover:text-zinc-700 transition-colors duration-200">Void Terminal OS</h3>
+                                            <p className="text-zinc-500 font-light text-sm">Decentralized command line interface environment.</p>
+                                        </div>
+                                        <button className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-600 group-hover:bg-zinc-950 group-hover:text-white transition-all duration-200">
+                                            <ExternalLinkIcon />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="relative z-10 py-12 bg-white">
+                        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-zinc-200 to-transparent"></div>
+                        <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6 pt-8">
+                            <div className="flex items-center gap-3">
+                                <div className="w-5 h-5 rounded-full border border-zinc-300 flex items-center justify-center bg-zinc-100 shadow-inner"></div>
+                                <span className="font-display font-bold tracking-[0.2em] text-sm text-zinc-800">STARDIVE</span>
+                            </div>
+                            
+                            <div className="text-xs font-mono text-zinc-400 tracking-wider">
+                                &copy; 2026 STARDIVE Systems.
+                            </div>
+                            
+                            <div className="flex gap-8 text-sm text-zinc-400 font-medium">
+                                <a href="#" className="hover:text-zinc-950 transition-colors duration-200">Twitter</a>
+                                <a href="#" className="hover:text-zinc-950 transition-colors duration-200">GitHub</a>
+                                <a href="#" className="hover:text-zinc-950 transition-colors duration-200">Discord</a>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
