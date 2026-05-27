@@ -17,7 +17,7 @@ export default function ProjectCard({ title, description, dashboardType }) {
           </h3>
           <p className="text-zinc-500 font-light text-sm">{description}</p>
         </div>
-        <button className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-600 transition-all duration-200 group-hover:bg-zinc-950 group-hover:text-white dark:bg-zinc-800/50 dark:text-zinc-400 dark:group-hover:bg-white dark:group-hover:text-black" aria-label={`Open ${title}`}>
+        <button className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-600 transition-all duration-200 group-hover:bg-zinc-950 group-hover:text-white dark:bg-zinc-800/50 dark:text-zinc-400 dark:group-hover:bg-white dark:group-hover:text-black" aria-label={`${title} öffnen`}>
           <ExternalLinkIcon />
         </button>
       </div>

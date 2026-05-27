@@ -4,37 +4,37 @@ import { TerminalIcon } from '../components/icons'
 const protocolSteps = [
   {
     step: '01',
-    title: 'Handshake',
+    title: 'Verbindungsaufbau',
     description:
-      'A client initiates connection by broadcasting a cryptographic handshake across the nearest isometric plane. The lattice responds with a signed acknowledgement, establishing a secure channel.',
+      'Ein Client initiiert die Verbindung, indem er einen kryptografischen Handshake über die nächstgelegene isometrische Ebene sendet. Das Gitter antwortet mit einer signierten Bestätigung und baut einen sicheren Kanal auf.',
   },
   {
     step: '02',
-    title: 'Plane Routing',
+    title: 'Ebenen-Routing',
     description:
-      'Data is segmented into isometric packets. Each packet carries planar coordinates that determine its path through the lattice. Adjacent planes share routing tables updated in real-time.',
+      'Daten werden in isometrische Pakete segmentiert. Jedes Paket trägt planare Koordinaten, die seinen Pfad durch das Gitter bestimmen. Angrenzende Ebenen teilen Routingtabellen, die in Echtzeit aktualisiert werden.',
   },
   {
     step: '03',
-    title: 'Vault Commit',
+    title: 'Vault-Commit',
     description:
-      'Once the destination plane is reached, data is committed to the vault engine. Cryptographic shards are distributed across redundant nodes within the plane for fault tolerance.',
+      'Sobald die Zielebene erreicht ist, werden Daten an die Vault-Engine übergeben. Kryptografische Shards werden zur Fehlertoleranz über redundante Knoten innerhalb der Ebene verteilt.',
   },
   {
     step: '04',
-    title: 'Verification',
+    title: 'Verifizierung',
     description:
-      'The lattice performs a consensus check across 2/3rds of active nodes in the plane. Upon verification, a confirmation hash is emitted and the data becomes available for retrieval.',
+      'Das Gitter führt eine Konsensprüfung über zwei Drittel der aktiven Knoten in der Ebene aus. Nach der Verifizierung wird ein Bestätigungshash ausgegeben und die Daten werden abrufbar.',
   },
 ]
 
 const specs = [
-  { label: 'Protocol', value: 'STARDIVE-SP/v2' },
-  { label: 'Transport', value: 'Isometric UDP / TCP' },
-  { label: 'Encryption', value: 'AES-256-GCM / ChaCha20' },
-  { label: 'Persistence', value: 'Distributed Vault Engine' },
-  { label: 'Consensus', value: 'Plane-Aware RAFT' },
-  { label: 'Max Planes', value: '2,048' },
+  { label: 'Protokoll', value: 'STARDIVE-SP/v2' },
+  { label: 'Transport', value: 'Isometrisches UDP / TCP' },
+  { label: 'Verschlüsselung', value: 'AES-256-GCM / ChaCha20' },
+  { label: 'Persistenz', value: 'Verteilte Vault-Engine' },
+  { label: 'Konsens', value: 'Ebenenbewusstes RAFT' },
+  { label: 'Max. Ebenen', value: '2.048' },
 ]
 
 export default function Protocol() {
@@ -46,16 +46,16 @@ export default function Protocol() {
           <div className="inline-flex items-center gap-2 mb-4 opacity-0 animate-fade-up">
             <span className="w-2 h-px bg-zinc-400 dark:bg-zinc-500" />
             <span className="font-mono text-xs text-zinc-400 tracking-widest uppercase dark:text-zinc-500">
-              Specification v2.4
+              Spezifikation v2.4
             </span>
           </div>
           <h1 className="text-5xl md:text-6xl font-display font-bold tracking-tight text-zinc-950 mb-8 opacity-0 animate-fade-up delay-100 dark:text-white">
-            The{' '}
-            <span className="text-gradient">Protocol</span>.
+            Das{' '}
+            <span className="text-gradient">Protokoll</span>.
           </h1>
           <p className="text-lg text-zinc-500 max-w-xl leading-relaxed font-light opacity-0 animate-fade-up delay-200 dark:text-zinc-400">
-            STARDIVE communicates through a proprietary spatial protocol designed for
-            low-latency, high-throughput data transmission across isometric planes.
+            STARDIVE kommuniziert über ein proprietäres räumliches Protokoll, das für
+            latenzarme Hochdurchsatz-Übertragung über isometrische Ebenen entwickelt wurde.
           </p>
         </div>
 
@@ -91,7 +91,7 @@ export default function Protocol() {
               <TerminalIcon />
             </div>
             <h2 className="text-2xl font-display font-bold text-zinc-950 tracking-tight dark:text-white">
-              Technical Specifications
+              Technische Spezifikationen
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -3,10 +3,10 @@ import { Outlet, Link, useLocation } from 'react-router-dom'
 import { MenuIcon, MoonIcon, SunIcon } from '../components/icons'
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Home' },
-  { to: '/architecture', label: 'Architecture' },
-  { to: '/projects', label: 'Constructs' },
-  { to: '/protocol', label: 'Protocol' },
+  { to: '/', label: 'Startseite' },
+  { to: '/architecture', label: 'Architektur' },
+  { to: '/projects', label: 'Konstrukte' },
+  { to: '/protocol', label: 'Protokoll' },
 ]
 
 export default function MainLayout() {
@@ -117,13 +117,13 @@ export default function MainLayout() {
 
           <div className="flex items-center gap-4">
             <Link to="/protocol" className="hidden md:flex items-center gap-2 font-mono text-xs border border-zinc-200 hover:border-zinc-400 px-6 py-2.5 rounded-full transition-all duration-200 text-zinc-800 bg-white hover:bg-zinc-50 backdrop-blur-md shadow-sm group dark:border-zinc-700 dark:text-white dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:shadow-lg">
-              Init Sequence
+              Sequenz starten
               <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full group-hover:bg-emerald-500 transition-colors" />
             </Link>
             <button
               className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-600 shadow-sm transition-all duration-200 hover:border-zinc-400 hover:text-zinc-950 dark:border-zinc-700 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:border-zinc-400 dark:hover:text-white"
               type="button"
-              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              aria-label={`Zum ${theme === 'dark' ? 'hellen' : 'dunklen'} Modus wechseln`}
               onClick={toggleTheme}
             >
               {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
@@ -131,7 +131,7 @@ export default function MainLayout() {
             <button
               className="md:hidden p-2 text-zinc-500 hover:text-zinc-950 bg-white rounded-full border border-zinc-200 backdrop-blur-md dark:text-zinc-400 dark:hover:text-white dark:bg-zinc-900/50 dark:border-zinc-800"
               type="button"
-              aria-label="Toggle navigation"
+              aria-label="Navigation umschalten"
               aria-expanded={isMenuOpen}
               onClick={() => setIsMenuOpen((open) => !open)}
             >
@@ -181,7 +181,7 @@ export default function MainLayout() {
           </div>
 
           <div className="text-xs font-mono text-zinc-600 tracking-wider dark:text-zinc-600">
-            &copy; 2026 STARDIVE Systems.
+            &copy; 2026 STARDIVE Systeme.
           </div>
 
           <div className="flex gap-8 text-sm text-zinc-400 font-medium dark:text-zinc-500">
