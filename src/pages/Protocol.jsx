@@ -67,7 +67,7 @@ export default function Protocol() {
               className="flex gap-6 opacity-0 animate-fade-up group"
             >
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 rounded-full border border-zinc-200 bg-white flex items-center justify-center font-mono text-sm text-zinc-500 shadow-sm transition-all duration-300 group-hover:border-zinc-400 group-hover:text-zinc-950 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-400 dark:group-hover:text-white">
+                <div className="w-12 h-12 rounded-full border border-zinc-200 bg-white flex items-center justify-center font-mono text-sm text-zinc-500 shadow-sm transition-all duration-200 group-hover:border-zinc-400 group-hover:text-zinc-950 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-400 dark:group-hover:text-white">
                   {item.step}
                 </div>
                 <div className="w-px flex-1 bg-gradient-to-b from-zinc-200 to-transparent mt-3 dark:from-zinc-800" />

@@ -18,11 +18,19 @@ export default function MainLayout() {
   const location = useLocation()
 
   useEffect(() => {
+    let animationFrameId = null
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
+      if (animationFrameId !== null) return
+      animationFrameId = window.requestAnimationFrame(() => {
+        setIsScrolled(window.scrollY > 20)
+        animationFrameId = null
+      })
     }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (animationFrameId !== null) window.cancelAnimationFrame(animationFrameId)
+    }
   }, [])
 
   // Scroll to top on route change
@@ -71,7 +79,7 @@ export default function MainLayout() {
 
       {/* Navigation */}
       <header
-        className={`fixed top-0 w-full z-50 transition-all duration-500 ease-out ${
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ease-out ${
           isScrolled
             ? 'bg-[#f9f9fb]/90 backdrop-blur-xl border-b border-zinc-200/50 py-4 shadow-sm dark:bg-[#020202]/80 dark:border-white/5 dark:shadow-2xl'
             : 'bg-transparent py-8'
@@ -79,7 +87,7 @@ export default function MainLayout() {
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-full border border-zinc-300 flex items-center justify-center bg-white transition-all duration-300 group-hover:border-zinc-500 group-hover:shadow-[0_0_15px_rgba(9,9,11,0.05)] dark:border-zinc-600/50 dark:bg-zinc-900/80 dark:group-hover:border-zinc-400 dark:group-hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+            <div className="w-8 h-8 rounded-full border border-zinc-300 flex items-center justify-center bg-white transition-all duration-200 group-hover:border-zinc-500 group-hover:shadow-[0_0_15px_rgba(9,9,11,0.05)] dark:border-zinc-600/50 dark:bg-zinc-900/80 dark:group-hover:border-zinc-400 dark:group-hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]">
               <div className="w-2 h-2 bg-zinc-900 rounded-full animate-pulse-slow shadow-[0_0_8px_rgba(9,9,11,0.4)] dark:bg-white dark:shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
             </div>
             <span className="font-display font-bold tracking-[0.25em] text-lg text-zinc-950 dark:text-white">
@@ -97,7 +105,7 @@ export default function MainLayout() {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`transition-colors duration-300 ${
+                  className={`transition-colors duration-200 ${
                     isActive ? 'text-zinc-950 dark:text-white' : 'hover:text-zinc-950 dark:hover:text-white'
                   }`}
                 >
@@ -108,12 +116,12 @@ export default function MainLayout() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link to="/protocol" className="hidden md:flex items-center gap-2 font-mono text-xs border border-zinc-200 hover:border-zinc-400 px-6 py-2.5 rounded-full transition-all duration-300 text-zinc-800 bg-white hover:bg-zinc-50 backdrop-blur-md shadow-sm group dark:border-zinc-700 dark:text-white dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:shadow-lg">
+            <Link to="/protocol" className="hidden md:flex items-center gap-2 font-mono text-xs border border-zinc-200 hover:border-zinc-400 px-6 py-2.5 rounded-full transition-all duration-200 text-zinc-800 bg-white hover:bg-zinc-50 backdrop-blur-md shadow-sm group dark:border-zinc-700 dark:text-white dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:shadow-lg">
               Init Sequence
               <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full group-hover:bg-emerald-500 transition-colors" />
             </Link>
             <button
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-600 shadow-sm transition-all duration-300 hover:border-zinc-400 hover:text-zinc-950 dark:border-zinc-700 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:border-zinc-400 dark:hover:text-white"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-600 shadow-sm transition-all duration-200 hover:border-zinc-400 hover:text-zinc-950 dark:border-zinc-700 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:border-zinc-400 dark:hover:text-white"
               type="button"
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
               onClick={toggleTheme}
@@ -177,13 +185,13 @@ export default function MainLayout() {
           </div>
 
           <div className="flex gap-8 text-sm text-zinc-400 font-medium dark:text-zinc-500">
-            <a href="#" className="hover:text-zinc-950 transition-colors duration-300 dark:hover:text-white">
+            <a href="#" className="hover:text-zinc-950 transition-colors duration-200 dark:hover:text-white">
               Twitter
             </a>
-            <a href="#" className="hover:text-zinc-950 transition-colors duration-300 dark:hover:text-white">
+            <a href="#" className="hover:text-zinc-950 transition-colors duration-200 dark:hover:text-white">
               GitHub
             </a>
-            <a href="#" className="hover:text-zinc-950 transition-colors duration-300 dark:hover:text-white">
+            <a href="#" className="hover:text-zinc-950 transition-colors duration-200 dark:hover:text-white">
               Discord
             </a>
           </div>

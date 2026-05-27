@@ -34,10 +34,10 @@ export default function Home() {
             </p>
 
             <div className="flex flex-wrap gap-5 pt-4 opacity-0 animate-fade-up delay-300">
-              <Link to="/projects" className="flex items-center gap-2 bg-zinc-950 text-white px-8 py-4 font-semibold text-sm rounded-full transition-all duration-300 ease-out hover:scale-105 hover:bg-zinc-800 hover:shadow-[0_10px_30px_rgba(9,9,11,0.15)] dark:bg-white dark:text-black dark:hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+              <Link to="/projects" className="flex items-center gap-2 bg-zinc-950 text-white px-8 py-4 font-semibold text-sm rounded-full transition-all duration-200 ease-out hover:scale-105 hover:bg-zinc-800 hover:shadow-[0_10px_30px_rgba(9,9,11,0.15)] dark:bg-white dark:text-black dark:hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]">
                 Deploy Node <ArrowRightIcon />
               </Link>
-              <Link to="/protocol" className="flex items-center gap-2 px-8 py-4 font-mono text-sm border border-zinc-200 text-zinc-600 backdrop-blur-md transition-all duration-300 ease-out rounded-full shadow-sm hover:text-zinc-950 hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700/60 dark:text-zinc-300 dark:shadow-lg dark:hover:text-white dark:hover:border-zinc-400 dark:hover:bg-zinc-800/40">
+              <Link to="/protocol" className="flex items-center gap-2 px-8 py-4 font-mono text-sm border border-zinc-200 text-zinc-600 backdrop-blur-md transition-all duration-200 ease-out rounded-full shadow-sm hover:text-zinc-950 hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700/60 dark:text-zinc-300 dark:shadow-lg dark:hover:text-white dark:hover:border-zinc-400 dark:hover:bg-zinc-800/40">
                 Read Documentation
               </Link>
             </div>

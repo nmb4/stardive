@@ -17,7 +17,7 @@ function Dots({ cx, cy }) {
           fill="var(--cube-dot)"
           className="animate-pulse-slow"
           style={{
-            animationDelay: `${(i + j) * 0.3}s`,
+            animationDelay: `${(i + j) * 0.2}s`,
             opacity: (i + j + key) % 2 === 0 ? 0.8 : 0.2,
           }}
         />
@@ -30,7 +30,7 @@ function Dots({ cx, cy }) {
 export default function IsometricIllustration() {
   return (
     <div className="relative w-full max-w-2xl mx-auto aspect-square flex items-center justify-center pointer-events-none select-none">
-      <svg viewBox="0 0 500 500" className="w-full h-full isometric-figure">
+      <svg viewBox="0 0 500 500" className="w-full h-full">
         <defs>
           <linearGradient id="topFace" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="var(--cube-top-start)" />
@@ -44,32 +44,23 @@ export default function IsometricIllustration() {
             <stop offset="0%" stopColor="var(--cube-right-start)" />
             <stop offset="100%" stopColor="var(--cube-right-end)" />
           </linearGradient>
-
-          <filter id="edgeGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="0.5" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-
-          <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow
-              dx="0"
-              dy="var(--cube-shadow-y)"
-              stdDeviation="var(--cube-shadow-blur)"
-              floodColor="var(--cube-shadow-color)"
-              floodOpacity="var(--cube-shadow-opacity)"
-            />
-          </filter>
         </defs>
+
+        <g fill="var(--cube-floor-shadow)" stroke="none">
+          <path d="M250,285 L300,310 L250,335 L200,310 Z" />
+          <path d="M160,355 L210,380 L160,405 L110,380 Z" />
+          <path d="M340,405 L390,430 L340,455 L290,430 Z" />
+          <path d="M250,435 L300,460 L250,485 L200,460 Z" />
+        </g>
 
         <g
           stroke="var(--cube-edge)"
           strokeWidth="0.8"
           strokeLinejoin="round"
           strokeLinecap="round"
-          filter="url(#edgeGlow)"
         >
           {/* 1. BACK CUBE (Tallest) */}
-          <g transform="translate(0, -10)" filter="url(#softShadow)">
+          <g transform="translate(0, -10)">
             <path
               d="M250,90 L300,115 L300,255 L250,280 L200,255 L200,115 Z"
               fill="url(#rightFace)"
@@ -82,7 +73,7 @@ export default function IsometricIllustration() {
           </g>
 
           {/* 2. LEFT CUBE (Medium Tall) */}
-          <g transform="translate(0, -10)" filter="url(#softShadow)">
+          <g transform="translate(0, -10)">
             <path
               d="M160,180 L210,205 L210,325 L160,350 L110,325 L110,205 Z"
               fill="url(#rightFace)"
@@ -95,7 +86,7 @@ export default function IsometricIllustration() {
           </g>
 
           {/* 3. RIGHT CUBE - BOTTOM SOLID BASE */}
-          <g transform="translate(0, -10)" filter="url(#softShadow)">
+          <g transform="translate(0, -10)">
             <path
               d="M340,250 L390,275 L390,375 L340,400 L290,375 L290,275 Z"
               fill="url(#rightFace)"
@@ -107,13 +98,11 @@ export default function IsometricIllustration() {
           </g>
 
           {/* 4. RIGHT CUBE - TOP FLOATING PART (Animated) */}
-          <g className="animate-float" filter="url(#softShadow)">
+          <g className="animate-float accelerated-float">
             <path
               d="M340,265 L390,240 L340,255 L290,240 Z"
-              fill="var(--cube-cast)"
+              fill="var(--cube-cast-vector)"
               stroke="none"
-              opacity="var(--cube-cast-opacity)"
-              filter="blur(6px)"
             />
             <path
               d="M340,170 L390,195 L390,225 L340,250 L290,225 L290,195 Z"
@@ -127,7 +116,7 @@ export default function IsometricIllustration() {
           </g>
 
           {/* 5. FRONT CUBE (Lowest) */}
-          <g transform="translate(0, -10)" filter="url(#softShadow)">
+          <g transform="translate(0, -10)">
             <path
               d="M250,290 L300,315 L300,405 L250,430 L200,405 L200,315 Z"
               fill="url(#rightFace)"
