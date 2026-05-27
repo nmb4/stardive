@@ -4,9 +4,9 @@ import { MenuIcon, MoonIcon, SunIcon } from '../components/icons'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Startseite' },
-  { to: '/architecture', label: 'Architektur' },
-  { to: '/projects', label: 'Konstrukte' },
-  { to: '/protocol', label: 'Protokoll' },
+  { to: '/architecture', label: 'Arbeitsweise' },
+  { to: '/projects', label: 'Projekte' },
+  { to: '/protocol', label: 'Kontakt' },
 ]
 
 export default function MainLayout() {
@@ -117,7 +117,7 @@ export default function MainLayout() {
 
           <div className="flex items-center gap-4">
             <Link to="/protocol" className="hidden md:flex items-center gap-2 font-mono text-xs border border-zinc-200 hover:border-zinc-400 px-6 py-2.5 rounded-full transition-all duration-200 text-zinc-800 bg-white hover:bg-zinc-50 backdrop-blur-md shadow-sm group dark:border-zinc-700 dark:text-white dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:shadow-lg">
-              Sequenz starten
+              Anfrage starten
               <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full group-hover:bg-emerald-500 transition-colors" />
             </Link>
             <button
@@ -181,7 +181,7 @@ export default function MainLayout() {
           </div>
 
           <div className="text-xs font-mono text-zinc-600 tracking-wider dark:text-zinc-600">
-            &copy; 2026 STARDIVE Systeme.
+            &copy; 2026 STARDIVE Studio.
           </div>
 
           <div className="flex gap-8 text-sm text-zinc-400 font-medium dark:text-zinc-500">

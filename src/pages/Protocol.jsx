@@ -4,37 +4,37 @@ import { TerminalIcon } from '../components/icons'
 const protocolSteps = [
   {
     step: '01',
-    title: 'Verbindungsaufbau',
+    title: 'Kurzbriefing',
     description:
-      'Ein Client initiiert die Verbindung, indem er einen kryptografischen Handshake über die nächstgelegene isometrische Ebene sendet. Das Gitter antwortet mit einer signierten Bestätigung und baut einen sicheren Kanal auf.',
+      'Wir klären, ob es um ein Rework, eine neue Landingpage, einen Prototypen oder ein kleines Dev-Tool geht. Der Einstieg bleibt bewusst direkt.',
   },
   {
     step: '02',
-    title: 'Ebenen-Routing',
+    title: 'Visueller Entwurf',
     description:
-      'Daten werden in isometrische Pakete segmentiert. Jedes Paket trägt planare Koordinaten, die seinen Pfad durch das Gitter bestimmen. Angrenzende Ebenen teilen Routingtabellen, die in Echtzeit aktualisiert werden.',
+      'Vorhandene Seiten, Design-Inspirationen und gewünschte Wirkung werden zu einer klaren Richtung verdichtet. Bei Bedarf entstehen zuerst Bild-Mockups.',
   },
   {
     step: '03',
-    title: 'Vault-Commit',
+    title: 'Build & Deployment',
     description:
-      'Sobald die Zielebene erreicht ist, werden Daten an die Vault-Engine übergeben. Kryptografische Shards werden zur Fehlertoleranz über redundante Knoten innerhalb der Ebene verteilt.',
+      'Die Seite wird in Code umgesetzt, responsiv geprüft und auf Vercel oder in der passenden Umgebung bereitgestellt.',
   },
   {
     step: '04',
-    title: 'Verifizierung',
+    title: 'Übergabe',
     description:
-      'Das Gitter führt eine Konsensprüfung über zwei Drittel der aktiven Knoten in der Ebene aus. Nach der Verifizierung wird ein Bestätigungshash ausgegeben und die Daten werden abrufbar.',
+      'Am Ende stehen ein sichtbares Ergebnis, ein nachvollziehbarer Stand im Repo und klare nächste Schritte für Erweiterungen oder weitere Reworks.',
   },
 ]
 
 const specs = [
-  { label: 'Protokoll', value: 'STARDIVE-SP/v2' },
-  { label: 'Transport', value: 'Isometrisches UDP / TCP' },
-  { label: 'Verschlüsselung', value: 'AES-256-GCM / ChaCha20' },
-  { label: 'Persistenz', value: 'Verteilte Vault-Engine' },
-  { label: 'Konsens', value: 'Ebenenbewusstes RAFT' },
-  { label: 'Max. Ebenen', value: '2.048' },
+  { label: 'Startpunkt', value: 'Website-Rework' },
+  { label: 'Stack', value: 'React / Vercel' },
+  { label: 'Projektbasis', value: 'GitHub + Screenshots' },
+  { label: 'Designhilfe', value: 'GPT Image / KI-Tools' },
+  { label: 'Kontakt', value: 'E-Mail / Telegram' },
+  { label: 'Termine', value: 'cal.com' },
 ]
 
 export default function Protocol() {
@@ -46,16 +46,16 @@ export default function Protocol() {
           <div className="inline-flex items-center gap-2 mb-4 opacity-0 animate-fade-up">
             <span className="w-2 h-px bg-zinc-400 dark:bg-zinc-500" />
             <span className="font-mono text-xs text-zinc-400 tracking-widest uppercase dark:text-zinc-500">
-              Spezifikation v2.4
+              Verfügbarkeit
             </span>
           </div>
           <h1 className="text-5xl md:text-6xl font-display font-bold tracking-tight text-zinc-950 mb-8 opacity-0 animate-fade-up delay-100 dark:text-white">
-            Das{' '}
-            <span className="text-gradient">Protokoll</span>.
+            Kontakt &{' '}
+            <span className="text-gradient">Start</span>.
           </h1>
           <p className="text-lg text-zinc-500 max-w-xl leading-relaxed font-light opacity-0 animate-fade-up delay-200 dark:text-zinc-400">
-            STARDIVE kommuniziert über ein proprietäres räumliches Protokoll, das für
-            latenzarme Hochdurchsatz-Übertragung über isometrische Ebenen entwickelt wurde.
+            STARDIVE soll von Anfang an erreichbar sein: für schnelle Website-Reworks,
+            neue Landingpages, experimentelle Tools und visuelle Prototypen.
           </p>
         </div>
 
@@ -91,7 +91,7 @@ export default function Protocol() {
               <TerminalIcon />
             </div>
             <h2 className="text-2xl font-display font-bold text-zinc-950 tracking-tight dark:text-white">
-              Technische Spezifikationen
+              Praktische Eckdaten
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

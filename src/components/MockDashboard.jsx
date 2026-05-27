@@ -43,9 +43,9 @@ export default function MockDashboard({ type }) {
         <div className="w-5/6 h-2 bg-zinc-200 rounded-full dark:bg-zinc-800" />
       </div>
       <div className="mt-auto p-4 bg-zinc-50/80 rounded-xl border border-zinc-200/60 font-mono text-[10px] text-zinc-500 leading-relaxed dark:bg-zinc-900/50 dark:border-zinc-800">
-        {'>'} clusternetzwerk wird initialisiert...<br />
-        {'>'} kryptografische hashes werden geprüft... [OK]<br />
-        {'>'} verbindung hergestellt bei 0.4ms
+        {'>'} vercel-links werden gesammelt...<br />
+        {'>'} screenshots werden vorbereitet... [OK]<br />
+        {'>'} projekt-hub bereit
       </div>
     </div>
   )

@@ -3,28 +3,28 @@ import ProjectCard from '../components/ProjectCard'
 
 const projects = [
   {
-    title: 'Projekt Nexus',
-    description: 'Echtzeit-Plattform für Deep-Data-Telemetrie.',
+    title: 'Vercel Sites Directory',
+    description: 'Alle veröffentlichten Websites an einem Ort.',
     dashboardType: 'analytics',
-    details: 'Eine Hochfrequenz-Engine für Datenaufnahme und Visualisierung, die 2,4 Millionen Ereignisse pro Sekunde über verteilte isometrische Cluster verarbeitet.',
+    details: 'Die vorhandenen Vercel-Links werden gesammelt, geprüft und als Projekthub mit Screenshots, Kontext und klarer Navigation veröffentlicht.',
   },
   {
-    title: 'Void Terminal OS',
-    description: 'Dezentrale Kommandozeilenumgebung.',
+    title: 'STARDIVE API',
+    description: 'API-Bausteine für Dateien, Projekte und Agenten.',
     dashboardType: 'terminal',
-    details: 'Eine vollständig dezentrale Terminalumgebung, die über das isometrische Gitter operiert. Befehle werden parallel über Knoten ausgeführt und kryptografisch verifiziert.',
+    details: 'Die API bildet den technischen Unterbau für Files, spätere Projektfeeds und kleine Automationen, die aus Experimenten nutzbare Werkzeuge machen.',
   },
   {
-    title: 'Quanten-Relay',
-    description: 'Kommunikationsbrücke zwischen Ebenen.',
+    title: 'Reworks & Redesigns',
+    description: 'Vorher-Nachher-Arbeiten für bessere Webseiten.',
     dashboardType: 'analytics',
-    details: 'Ermöglicht nahtlose Datenweiterleitung zwischen unterschiedlichen isometrischen Ebenen. Adaptives Routing optimiert sich selbst anhand von Änderungen der Netzwerktopologie.',
+    details: 'Geplant sind Side-by-Side-Vergleiche alter und neuer Seiten, inklusive Bild-Mockups und anschließendem Code-Rebuild für echte Deployments.',
   },
   {
-    title: 'Obsidian-Vault',
-    description: 'Unveränderliches Datenarchiv.',
+    title: 'AI Models Track',
+    description: 'Notizen, Tests und Modellvergleiche aus der Praxis.',
     dashboardType: 'terminal',
-    details: 'Write-once-read-many-Speicherarchitektur mit kryptografischer Verkettung. Die Datenintegrität wird alle 60 Sekunden über das gesamte Gitter geprüft.',
+    details: 'Der KI-Track sammelt Erfahrungen mit Modellen, Prompt-Studien, Bild-Workflows und Code-Agenten, soweit sie für reale Website- und Tool-Arbeit relevant sind.',
   },
 ]
 
@@ -37,15 +37,16 @@ export default function Projects() {
           <div className="inline-flex items-center gap-2 mb-4 opacity-0 animate-fade-up">
             <span className="w-2 h-px bg-zinc-400 dark:bg-zinc-500" />
             <span className="font-mono text-xs text-zinc-400 tracking-widest uppercase dark:text-zinc-500">
-              Bereitgestellte Konstrukte
+              Projekt-Hub
             </span>
           </div>
           <h1 className="text-5xl md:text-6xl font-display font-bold tracking-tight text-zinc-950 mb-8 opacity-0 animate-fade-up delay-100 dark:text-white">
-            Alle <span className="text-gradient">Systeme</span>.
+            Alles <span className="text-gradient">sichtbar machen</span>.
           </h1>
           <p className="text-lg text-zinc-500 max-w-xl leading-relaxed font-light opacity-0 animate-fade-up delay-200 dark:text-zinc-400">
-            Ein Verzeichnis aller Konstrukte, die im STARDIVE-Gitter bereitgestellt sind.
-            Jedes System arbeitet autonom in seiner zugewiesenen isometrischen Ebene.
+            STARDIVE soll die verstreuten Arbeiten aus GitHub, Vercel und lokalen
+            Verzeichnissen bündeln: Websites, Tools, APIs, Designstudien und kommende
+            Redesigns.
           </p>
         </div>
 
