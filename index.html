@@ -1,32 +1,725 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>STARDIVE | Websites, Dev-Tools & Reworks</title>
-    <script>
-      (() => {
-        try {
-          const storedTheme = localStorage.getItem('stardive-theme')
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-          const theme = storedTheme || (prefersDark ? 'dark' : 'light')
-          document.documentElement.classList.toggle('dark', theme === 'dark')
-        } catch {
-          document.documentElement.classList.remove('dark')
-        }
-      })()
-    </script>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>STARDIVE — Websites, Dev-Tools & Reworks</title>
+<meta name="description" content="STARDIVE ist der Ort für schnelle Website-Reworks, experimentelle Dev-Tools und KI-gestützte Prototypen." />
+<link rel="icon" href="/assets/stardive-mark.svg" type="image/svg+xml" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap');
+  :root {
+    --bg:#0b0d0c; --panel:#131614; --line:rgba(255,255,255,.105); --text:#f2f0e9; --muted:#969891;
+    --lime:#d9efad; --peach:#f5c8ad; --lav:#c9c6e6;
+    --shadow-natural: 0 0 0 1px rgba(0,0,0,.16), 0 1px 2px -.5px rgba(0,0,0,.18), 0 3px 5px -1.5px rgba(0,0,0,.18), 0 7px 10px -3px rgba(0,0,0,.19), 0 15px 20px -6px rgba(0,0,0,.20), 0 30px 38px -12px rgba(0,0,0,.22);
+    --shadow-raised: 0 0 0 1px rgba(0,0,0,.19), 0 1px 2px -.5px rgba(0,0,0,.20), 0 3px 6px -1.5px rgba(0,0,0,.22), 0 8px 14px -3px rgba(0,0,0,.24), 0 18px 28px -6px rgba(0,0,0,.28), 0 36px 52px -12px rgba(0,0,0,.32), 0 48px 100px -28px rgba(0,0,0,.68);
+  }
+  *{box-sizing:border-box}
+  ::selection{background:rgba(217,239,173,.82);color:#11140f;text-shadow:none}
+  ::-moz-selection{background:rgba(217,239,173,.82);color:#11140f;text-shadow:none}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+  a{color:inherit}
+  .noise{position:fixed;inset:0;z-index:10;pointer-events:none;opacity:.1;mix-blend-mode:screen;filter:url('#noise-bg-fx') grayscale(100%)}
+  .noise svg{width:100%;height:100%;display:block}
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body class="antialiased selection:bg-zinc-200 selection:text-zinc-950 dark:selection:bg-zinc-700 dark:selection:text-white font-sans">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+  /* Nav */
+  nav{position:sticky;top:14px;z-index:20;height:62px;max-width:1260px;margin:14px auto 0;padding:0 14px 0 18px;display:flex;align-items:center;justify-content:space-between;border:1px solid rgba(255,255,255,.055);border-radius:22px;background:rgba(18,21,19,.42);backdrop-filter:blur(18px) saturate(130%);-webkit-backdrop-filter:blur(18px) saturate(130%);box-shadow:inset 0 1px 0 rgba(255,255,255,.035);transition:max-width .62s cubic-bezier(.22,1,.36,1),margin .62s cubic-bezier(.22,1,.36,1),border-color .45s ease,background .45s ease,box-shadow .62s cubic-bezier(.22,1,.36,1),transform .62s cubic-bezier(.22,1,.36,1);animation:enter-up .7s cubic-bezier(.22,1,.36,1) both}
+  nav:after{content:'';position:absolute;left:22px;right:22px;bottom:-17px;height:17px;pointer-events:none;background:linear-gradient(180deg,rgba(221,238,170,.055),transparent);filter:blur(9px);opacity:0;transition:opacity .55s ease,filter .55s ease}
+  nav.is-floating{max-width:1100px;margin-top:12px;background:rgba(18,21,19,.82);border-color:rgba(255,255,255,.13);box-shadow:var(--shadow-raised),inset 0 1px 0 rgba(255,255,255,.065);transform:translateY(2px)}
+  nav.is-floating:after{opacity:.5;filter:blur(11px)}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:600;letter-spacing:-.04em;font-size:20px;text-decoration:none}
+  .mark{width:27px;height:27px;flex:none;display:block}
+  .links{display:flex;gap:31px}
+  .links a{font-size:14px;color:#aaa;text-decoration:none;transition:color .2s ease;position:relative}
+  .links a:hover{color:white}
+  .links a:after{content:'';position:absolute;left:0;bottom:-7px;width:100%;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+  .links a:hover:after{transform:scaleX(1);transform-origin:left}
+  .nav-right{display:flex;align-items:center;gap:10px}
+  .nav-cta{font-size:14px;text-decoration:none;color:#101210;background:#e8e6de;padding:9px 14px;border-radius:10px;font-weight:600;border:1px solid rgba(255,255,255,.11);box-shadow:0 1px 1px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.38);transition:transform .2s ease,box-shadow .35s ease}
+  .nav-cta:hover{transform:translateY(-1px);box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.38)}
+  .menu-btn{display:none;width:38px;height:38px;border:1px solid rgba(255,255,255,.11);border-radius:10px;background:rgba(18,21,19,.6);color:#ccc;cursor:pointer;align-items:center;justify-content:center;padding:0}
+  .menu-btn svg{width:18px;height:18px}
+  .mobile-menu{display:none;position:fixed;inset:0;z-index:30;background:rgba(5,6,5,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:80px 24px 24px}
+  .mobile-menu.is-open{display:block}
+  .mobile-menu-inner{max-width:400px;margin:0 auto;border:1px solid var(--line);border-radius:18px;background:rgba(18,21,19,.92);padding:12px;box-shadow:var(--shadow-raised)}
+  .mobile-menu a{display:block;padding:14px 16px;font:14px 'DM Mono';color:#bbb;text-decoration:none;border-radius:10px;transition:background .2s,color .2s}
+  .mobile-menu a:hover{background:rgba(255,255,255,.04);color:#fff}
+
+  /* Hero */
+  .hero{min-height:720px;position:relative;padding:100px 30px 42px;display:flex;flex-direction:column;align-items:center;text-align:center;isolation:isolate}
+  .halo{position:absolute;width:950px;height:560px;top:125px;z-index:-1;border-radius:50%;background:radial-gradient(ellipse at center,rgba(221,238,170,.19),rgba(245,196,168,.1) 31%,rgba(185,190,244,.06) 49%,transparent 69%);filter:blur(15px);animation:halo-breathe 9s ease-in-out infinite}
+  .eyebrow{font-family:'DM Mono';font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#acafa7;display:flex;gap:9px;align-items:center;animation:enter-up .75s .08s cubic-bezier(.22,1,.36,1) both}
+  .eyebrow i{width:6px;height:6px;background:#cceaa0;border-radius:50%;box-shadow:0 0 11px #d8eeaa;animation:glow-pulse 2.7s ease-in-out infinite}
+  .hero h1{font-size:clamp(54px,7.5vw,110px);line-height:.94;letter-spacing:-.026em;font-weight:500;max-width:950px;margin:26px 0 22px;animation:enter-up .85s .16s cubic-bezier(.22,1,.36,1) both}
+  .hero h1 em{font-family:'Playfair Display';font-weight:500;letter-spacing:-.02em;font-style:italic}
+  .hero p{margin:0;max-width:525px;font-size:17px;line-height:1.55;color:#a9aaa4;animation:enter-up .8s .25s cubic-bezier(.22,1,.36,1) both}
+  .actions{display:flex;gap:12px;margin:30px 0 60px;animation:enter-up .8s .34s cubic-bezier(.22,1,.36,1) both}
+  .btn{padding:13px 19px;border-radius:11px;text-decoration:none;font-size:14px;font-weight:600;transition:transform .2s ease,box-shadow .35s ease,background .35s ease,border-color .25s ease}
+  .btn:active{transform:scale(.97)}
+  .primary{color:#141512;background:linear-gradient(105deg,var(--lime),var(--peach),var(--lav))}
+  .primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-natural),0 12px 35px rgba(220,235,170,.16)}
+  .secondary{border:1px solid var(--line);color:#ddd;background:#121412}
+  .secondary:hover{border-color:#555}
+
+  /* Product mock */
+  .product{width:min(1120px,100%);height:600px;background:#151815;border:1px solid rgba(255,255,255,.13);border-radius:23px;position:relative;overflow:hidden;text-align:left;box-shadow:var(--shadow-raised),0 -24px 100px rgba(224,232,161,.09);animation:enter-scale 1s .42s cubic-bezier(.22,1,.36,1) both;transition:transform .6s cubic-bezier(.22,1,.36,1),box-shadow .6s ease}
+  .product:hover{transform:translateY(-5px);box-shadow:var(--shadow-raised),0 -30px 105px rgba(224,232,161,.14)}
+  .product:before{content:'';position:absolute;width:790px;height:380px;left:50%;top:-255px;transform:translateX(-50%);border:1px solid rgba(229,222,157,.42);border-radius:50%;box-shadow:0 0 55px 19px rgba(243,202,166,.17),inset 0 0 70px rgba(222,238,171,.1)}
+  .window{position:absolute;inset:66px 58px 36px;border:1px solid rgba(255,255,255,.12);border-radius:13px;background:#0c0e0d;overflow:hidden;box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.065),inset 0 -1px 0 rgba(0,0,0,.22);transition:transform .55s cubic-bezier(.22,1,.36,1),border-color .55s ease}
+  .product:hover .window{transform:translateY(-3px);border-color:rgba(255,255,255,.18)}
+  .window-top{height:41px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 15px;gap:7px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#e67569}
+  .dot:nth-child(2){background:#e8c55f}.dot:nth-child(3){background:#76c87e}
+  .tab{margin-left:18px;color:#888;font:11px 'DM Mono';background:#151815;padding:6px 42px 6px 12px;border-radius:6px}
+  .workspace{display:grid;grid-template-columns:176px 1fr 260px;height:calc(100% - 41px)}
+  .side{border-right:1px solid var(--line);padding:16px 14px;color:#777;font:10px/2.25 'DM Mono'}
+  .tree-head{color:#bbb;margin-bottom:7px}
+  .code{padding:23px 30px;font:12px/2 'DM Mono';color:#9a9c98}
+  .code .pink{color:#f1abb6}.code .green{color:#c9e9a1}.code .blue{color:#aebdea}.code .dim{color:#4f5350}
+  .code > *{animation:code-in .6s cubic-bezier(.22,1,.36,1) both}
+  .code > *:nth-child(1){animation-delay:.95s}.code > *:nth-child(2){animation-delay:1.03s}.code > *:nth-child(3){animation-delay:1.11s}.code > *:nth-child(4){animation-delay:1.19s}.code > *:nth-child(5){animation-delay:1.27s}.code > *:nth-child(6){animation-delay:1.35s}
+  .assistant-panel{border-left:1px solid var(--line);padding:20px;color:#afb0ab;font-size:11px;line-height:1.6}
+  .assistant-panel b{color:#e4e3dc;font-size:10px;letter-spacing:.08em}
+  .task{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+  .check{color:#d4e89e;margin-right:5px}
+
+  /* Sections */
+  .section{max-width:1260px;margin:0 auto;padding:64px 30px}
+  .section-label{font:11px 'DM Mono';color:#9c9e98;text-transform:uppercase;letter-spacing:.11em}
+  .section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:28px}
+  .section-head h2{font-size:clamp(36px,4vw,58px);font-weight:500;letter-spacing:-.045em;line-height:1;margin:13px 0 0;max-width:560px}
+  .section-head p{color:#999b95;max-width:320px;line-height:1.5;margin:0;font-size:15px}
+
+  /* Feature cards */
+  .cards{display:grid;grid-template-columns:1.15fr .85fr .85fr;gap:14px}
+  .card{min-height:330px;padding:25px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(145deg,#161917,#101211);position:relative;overflow:hidden;box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.065),inset 0 -1px 0 rgba(0,0,0,.22);transition:transform .5s cubic-bezier(.22,1,.36,1),border-color .5s ease;isolation:isolate}
+  .card:after{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;box-shadow:var(--shadow-raised);opacity:0;transition:opacity .5s cubic-bezier(.22,1,.36,1);pointer-events:none}
+  .card:hover{transform:translateY(-7px);border-color:rgba(255,255,255,.18)}
+  .card:hover:after{opacity:1}
+  .card h3{font-size:18px;font-weight:500;letter-spacing:-.035em;margin:0 0 10px}
+  .card p{font-size:14px;line-height:1.5;color:#92958f;max-width:280px;margin:0}
+  .orb{position:absolute;width:270px;height:270px;border-radius:50%;bottom:-105px;right:-65px;background:radial-gradient(circle at 35% 35%,#fff1c6,#d1e7a6 23%,#c3bce2 53%,transparent 70%);filter:blur(4px);opacity:.85;animation:orb-drift 8s ease-in-out infinite}
+  .terminal{position:absolute;left:24px;right:24px;bottom:23px;border:1px solid #30332e;background:#0b0d0c;border-radius:10px;padding:14px;box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.05),inset 0 -1px 0 rgba(0,0,0,.22);font:10px/1.85 'DM Mono';color:#aaa}
+  .prompt{color:#d2eaa4}
+  .terminal .prompt:last-child{display:inline-block;animation:cursor-blink 1.1s step-end infinite}
+  .spark{position:absolute;right:24px;bottom:26px;width:120px;height:120px;border:1px solid rgba(218,235,173,.35);border-radius:25px;transform:rotate(15deg);box-shadow:var(--shadow-natural),inset 0 0 35px rgba(231,195,177,.09);transition:transform .6s cubic-bezier(.22,1,.36,1),box-shadow .6s ease}
+  .card:nth-child(3):hover .spark{transform:rotate(28deg) scale(1.08);box-shadow:var(--shadow-natural),inset 0 0 45px rgba(231,195,177,.15)}
+
+  .section-head h2 em{font-family:'Playfair Display';font-style:italic;font-weight:500;letter-spacing:-.02em}
+
+  /* Workflow */
+  .workflow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+  .workflow-step{padding:26px 24px 30px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(160deg,#171a18 0%,#101211 58%,#0d0f0e 100%);position:relative;overflow:hidden;box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.05);transition:transform .5s cubic-bezier(.22,1,.36,1),border-color .5s ease}
+  .workflow-step:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 85% 110%,rgba(217,239,173,.07),transparent 55%);pointer-events:none}
+  .workflow-step:after{content:'';position:absolute;top:0;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(217,239,173,.32),transparent);opacity:0;transition:opacity .45s ease}
+  .workflow-step:hover{transform:translateY(-5px);border-color:rgba(255,255,255,.16)}
+  .workflow-step:hover:after{opacity:1}
+  .workflow-num{font:10px 'DM Mono';color:var(--lime);letter-spacing:.12em;display:block;margin-bottom:14px}
+  .workflow-step h3{font-size:17px;font-weight:500;letter-spacing:-.035em;margin:0 0 9px}
+  .workflow-step p{font-size:13px;line-height:1.55;color:#92958f;margin:0;max-width:280px}
+
+  .metrics-strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:17px;background:linear-gradient(145deg,#161917,#101211);overflow:hidden;box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.05)}
+  .metrics-strip-item{padding:26px 18px;text-align:center;position:relative}
+  .metrics-strip-item:not(:last-child):after{content:'';position:absolute;right:0;top:22%;height:56%;width:1px;background:linear-gradient(180deg,transparent,var(--line),transparent)}
+  .metric-val{font-size:clamp(22px,2.5vw,32px);font-weight:600;letter-spacing:-.03em;margin-bottom:5px}
+  .metric-label{font:9px 'DM Mono';color:#7d8079;letter-spacing:.11em;text-transform:uppercase}
+
+  /* Projects */
+  .filter-track{margin-bottom:28px}
+  .filter-bar{display:inline-flex;flex-wrap:wrap;gap:4px;padding:5px;border:1px solid rgba(255,255,255,.09);border-radius:999px;background:rgba(14,16,15,.78);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+  .filter-btn{font:9px 'DM Mono';letter-spacing:.09em;text-transform:uppercase;padding:9px 15px;border-radius:999px;border:none;background:transparent;color:#7f827b;cursor:pointer;transition:color .25s ease,background .25s ease,box-shadow .25s ease,transform .2s ease}
+  .filter-btn:hover{color:#d5d6d0}
+  .filter-btn.is-active{background:linear-gradient(105deg,var(--lime),var(--peach));color:#141512;font-weight:600;box-shadow:var(--shadow-natural)}
+  .filter-btn:active{transform:scale(.97)}
+
+  .featured{display:grid;grid-template-columns:1.12fr .88fr;gap:22px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(155deg,#171a18,#101211 62%,#0e100f);padding:22px;margin-bottom:22px;box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.05);transition:opacity .3s ease,transform .5s cubic-bezier(.22,1,.36,1),border-color .5s ease}
+  .featured.is-hidden{display:none}
+  .featured:hover{border-color:rgba(255,255,255,.14);transform:translateY(-4px)}
+  .featured-window{border:1px solid rgba(255,255,255,.11);border-radius:13px;overflow:hidden;background:#0c0e0d;box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.04)}
+  .featured-bar{height:34px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 12px;gap:6px;background:#121412}
+  .featured-bar .dot{width:7px;height:7px}
+  .featured-bar .tab{margin-left:10px;padding:5px 10px;font-size:9px}
+  .featured-img{aspect-ratio:16/10;overflow:hidden;position:relative;background:#0c0e0d}
+  .featured-img img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .7s cubic-bezier(.22,1,.36,1);opacity:.92}
+  .featured:hover .featured-img img{transform:scale(1.025);opacity:1}
+  .featured-img:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,13,12,.04) 40%,rgba(11,13,12,.42));pointer-events:none}
+  .featured-body{display:flex;flex-direction:column;justify-content:center;padding:6px 4px 6px 8px}
+  .featured-body h3{font-size:clamp(24px,2.5vw,30px);font-weight:500;letter-spacing:-.04em;margin:10px 0 11px;line-height:1.05}
+  .featured-body .desc{color:#b5b7b0;font-size:14px;line-height:1.55;margin:0 0 9px}
+  .featured-body .details{color:#757770;font-size:12px;line-height:1.6;margin:0 0 18px}
+  .badge{display:inline-flex;align-items:center;gap:6px;font:9px 'DM Mono';letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:999px;border:1px solid rgba(217,239,173,.22);background:rgba(12,14,13,.75);color:#c9e9a1}
+  .badge i{width:5px;height:5px;border-radius:50%;background:#c9e9a1;box-shadow:0 0 8px #c9e9a1;animation:glow-pulse 2.7s ease-in-out infinite}
+
+  .tags{display:flex;flex-wrap:wrap;gap:5px}
+  .tag{font:8px 'DM Mono';letter-spacing:.07em;text-transform:uppercase;padding:4px 7px;border-radius:5px;border:1px solid rgba(255,255,255,.07);color:#7f827b;background:rgba(255,255,255,.025)}
+
+  .project-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .project-card{border:1px solid var(--line);border-radius:17px;background:linear-gradient(155deg,#171a18,#101211 70%);overflow:hidden;transition:transform .45s cubic-bezier(.22,1,.36,1),border-color .45s ease,opacity .3s ease;box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.04)}
+  .project-card.is-hidden{display:none}
+  .project-card:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.15)}
+  .project-card .thumb{aspect-ratio:4/3;overflow:hidden;border-bottom:1px solid var(--line);position:relative;background:#0c0e0d}
+  .project-card .thumb img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .65s cubic-bezier(.22,1,.36,1),opacity .4s ease;opacity:.82}
+  .project-card:hover .thumb img{transform:scale(1.045);opacity:1}
+  .project-card .thumb:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,13,12,.08) 35%,rgba(11,13,12,.62));pointer-events:none;transition:opacity .4s ease}
+  .project-card:hover .thumb:after{opacity:.75}
+  .project-index{position:absolute;top:11px;left:11px;z-index:2;font:9px 'DM Mono';color:rgba(242,240,233,.72);letter-spacing:.09em;padding:4px 7px;border-radius:6px;background:rgba(12,14,13,.72);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(8px)}
+  .status-badge{position:absolute;top:11px;right:11px;z-index:2;font:8px 'DM Mono';letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.11);background:rgba(12,14,13,.82);color:#c8c9c3;backdrop-filter:blur(8px)}
+  .status-badge.live{color:#c9e9a1;border-color:rgba(201,233,161,.22)}
+  .status-badge.live:before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:#c9e9a1;margin-right:5px;box-shadow:0 0 7px #c9e9a1;vertical-align:middle}
+  .project-body{padding:20px 20px 22px}
+  .project-body h4{font-size:16px;font-weight:500;letter-spacing:-.03em;margin:0 0 7px}
+  .project-body .desc{font-size:13px;line-height:1.5;color:#92958f;margin:0}
+  .project-body .details{font-size:11px;line-height:1.55;color:#666;margin:12px 0 0;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+  .project-body .tags{margin-bottom:10px}
+
+  /* Contact */
+  .contact-layout{display:grid;grid-template-columns:1.08fr .92fr;gap:16px;align-items:stretch}
+  .protocol-panel{border:1px solid var(--line);border-radius:17px;background:linear-gradient(155deg,#171a18,#101211);padding:28px 28px 20px;box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.05)}
+  .protocol-panel h3{font-size:18px;font-weight:500;letter-spacing:-.035em;margin:0 0 22px}
+  .protocol-steps{display:grid;gap:0;position:relative}
+  .protocol-steps:before{content:'';position:absolute;left:18px;top:22px;bottom:22px;width:1px;background:linear-gradient(180deg,rgba(217,239,173,.35),rgba(255,255,255,.07) 72%,transparent)}
+  .step{display:grid;grid-template-columns:38px 1fr;gap:16px;padding:0 0 22px;position:relative}
+  .step:last-child{padding-bottom:0}
+  .step-num{width:38px;height:38px;border:1px solid rgba(217,239,173,.22);border-radius:50%;display:flex;align-items:center;justify-content:center;font:10px 'DM Mono';color:var(--lime);background:rgba(12,14,13,.85);position:relative;z-index:1}
+  .step h4{font-size:16px;font-weight:500;letter-spacing:-.03em;margin:6px 0 6px}
+  .step p{font-size:12px;line-height:1.6;color:#92958f;margin:0;max-width:360px}
+
+  .specs-panel{border:1px solid var(--line);border-radius:17px;background:linear-gradient(155deg,#171a18,#101211);overflow:hidden;box-shadow:var(--shadow-natural),inset 0 1px 0 rgba(255,255,255,.05);display:flex;flex-direction:column}
+  .specs-header{padding:20px 22px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .specs-header h3{font-size:16px;font-weight:500;letter-spacing:-.03em;margin:0}
+  .specs-header span{font:9px 'DM Mono';color:#7a7c76;letter-spacing:.08em;text-transform:uppercase}
+  .specs-body{padding:18px 22px 22px;font:11px/2 'DM Mono';color:#9a9c98;flex:1}
+  .spec-line{display:flex;justify-content:space-between;gap:20px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+  .spec-line:last-child{border-bottom:none}
+  .spec-line .label{color:#636660;text-transform:uppercase;letter-spacing:.06em;font-size:9px;padding-top:2px}
+  .spec-line .value{color:#d5d7d0;text-align:right}
+  .specs-body .prompt{color:#d2eaa4;display:inline-block;margin-top:10px;animation:cursor-blink 1.1s step-end infinite}
+
+  /* Footer */
+  footer{padding:42px 30px 48px;border-top:1px solid var(--line);max-width:1260px;margin:auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;color:#777;font-size:13px}
+  .footer-brand{color:#eae9e2;justify-self:start}
+  .footer-tagline{justify-self:center;font:10px 'DM Mono';letter-spacing:.09em;text-transform:uppercase;color:#666;text-align:center}
+  .footer-end{justify-self:end;display:flex;align-items:center;gap:22px}
+  .footer-links{display:flex;gap:18px}
+  .footer-links a{color:#777;text-decoration:none;font:11px 'DM Mono';letter-spacing:.05em;transition:color .2s}
+  .footer-links a:hover{color:#d5d6d0}
+
+  /* Reveal */
+  .reveal{opacity:0;transform:translateY(28px);filter:blur(6px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1),filter .8s ease}
+  .reveal.is-visible{opacity:1;transform:none;filter:none}
+  .cards .card:nth-child(2){transition-delay:.09s}.cards .card:nth-child(3){transition-delay:.18s}
+  .workflow .workflow-step:nth-child(2){transition-delay:.08s}.workflow .workflow-step:nth-child(3){transition-delay:.16s}
+  .metrics-strip-item{transition:background .35s ease}
+  .metrics-strip-item:hover{background:rgba(255,255,255,.02)}
+
+  /* Animations */
+  @keyframes enter-up{from{opacity:0;transform:translateY(22px);filter:blur(7px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+  @keyframes enter-scale{from{opacity:0;transform:translateY(28px) scale(.985);filter:blur(8px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+  @keyframes halo-breathe{0%,100%{transform:scale(1);opacity:.78}50%{transform:scale(1.075);opacity:1}}
+  @keyframes orb-drift{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-15px,-18px,0) scale(1.06)}}
+  @keyframes glow-pulse{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.22)}}
+  @keyframes cursor-blink{0%,46%{opacity:1}47%,100%{opacity:.14}}
+  @keyframes code-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none;filter:none}}
+
+  /* Mobile */
+  @media(max-width:750px){
+    nav{width:auto;max-width:none;margin:10px 12px 0;height:56px;padding:0 11px 0 14px;border-radius:18px}
+    nav.is-floating{margin:9px 12px 0;transform:none}
+    .links{display:none}.menu-btn{display:flex}
+    .brand{font-size:18px}.mark{width:25px;height:25px}.nav-cta{padding:9px 13px;font-size:13px}
+    .hero{min-height:auto;padding:76px 20px 54px;overflow:hidden}
+    .halo{width:620px;height:430px;top:130px}
+    .eyebrow{font-size:10px}
+    .hero h1{font-size:clamp(43px,12.5vw,56px);line-height:.96;max-width:390px;margin:21px 0 18px}
+    .hero p{max-width:350px;font-size:15px}
+    .actions{width:100%;justify-content:center;gap:9px;margin:25px 0 42px}.btn{padding:12px 14px;font-size:13px;white-space:nowrap}
+    .product{width:100%;max-width:460px;height:auto;aspect-ratio:1.24/1;max-height:350px;border-radius:21px}
+    .product:before{width:620px;height:310px;top:-195px}
+    .window{inset:42px 14px 16px;border-radius:12px}
+    .window-top{height:39px;padding:0 12px}.tab{margin-left:10px;padding:6px 12px;font-size:9px;max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .workspace{display:block;height:calc(100% - 39px)}
+    .side,.assistant-panel{display:none!important}
+    .code{display:block;width:100%;height:100%;padding:16px 18px;font-size:10px;line-height:1.9;white-space:nowrap;overflow:hidden}
+    .section{padding:48px 20px 52px}
+    .section-head{display:block}.section-head p{margin-top:18px;max-width:360px}
+    .section-head h2{font-size:39px;max-width:390px}
+    .cards,.project-grid{grid-template-columns:1fr;gap:12px}
+    .card{min-height:265px}
+    .workflow{grid-template-columns:1fr;gap:12px}
+    .metrics-strip{grid-template-columns:repeat(2,1fr)}
+    .metrics-strip-item:nth-child(2):after{display:none}
+    .metrics-strip-item{padding:20px 14px}
+    .filter-bar{width:100%;justify-content:flex-start;border-radius:14px;padding:4px}
+    .filter-btn{padding:8px 11px;font-size:8px}
+    .featured{grid-template-columns:1fr;padding:16px;gap:18px}
+    .featured-body{padding:0}
+    .contact-layout{grid-template-columns:1fr;gap:14px}
+    .protocol-panel{padding:22px 20px 16px}
+    footer{padding:32px 20px 36px;grid-template-columns:1fr;text-align:center;gap:14px}
+    .footer-brand,.footer-end,.footer-tagline{justify-self:center}
+    .footer-end{flex-direction:column;gap:12px}
+    .footer-links{justify-content:center}
+  }
+  @media(max-width:380px){
+    .hero{padding-left:16px;padding-right:16px}.hero h1{font-size:42px}
+    .actions{gap:7px}.btn{padding:11px 11px}
+    .product{aspect-ratio:1.18/1;max-height:330px}
+    .section{padding-left:16px;padding-right:16px}
+  }
+</style>
+</head>
+<body>
+<figure class="noise" aria-hidden="true">
+  <svg xmlns="http://www.w3.org/2000/svg">
+    <filter id="noise-bg-fx">
+      <feTurbulence type="turbulence" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noise-bg-fx)" />
+  </svg>
+</figure>
+
+<nav>
+  <a class="brand" href="#start">
+    <img class="mark" src="/assets/stardive-mark.svg" width="27" height="27" alt="" />
+    stardive
+  </a>
+  <div class="links">
+    <a href="#start">Startseite</a>
+    <a href="#arbeitsweise">Arbeitsweise</a>
+    <a href="#projekte">Projekte</a>
+    <a href="#kontakt">Kontakt</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-cta" href="#kontakt">Anfrage starten</a>
+    <button class="menu-btn" type="button" aria-label="Navigation öffnen" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu" hidden>
+  <div class="mobile-menu-inner">
+    <a href="#start">Startseite</a>
+    <a href="#arbeitsweise">Arbeitsweise</a>
+    <a href="#projekte">Projekte</a>
+    <a href="#kontakt">Kontakt</a>
+  </div>
+</div>
+
+<main>
+  <section class="hero" id="start">
+    <div class="halo"></div>
+    <div class="eyebrow"><i></i> Studio online</div>
+    <h1>Das Nächste soll sich<br><em>unvermeidlich</em> anfühlen.</h1>
+    <p>STARDIVE ist der Ort für schnelle Website-Reworks, experimentelle Dev-Tools und KI-gestützte Prototypen. Gebaut, kuratiert und ausgeliefert mit GitHub, Vercel und einem klaren Blick für Interface-Qualität.</p>
+    <div class="actions">
+      <a class="btn primary" href="#projekte">Projekte ansehen →</a>
+      <a class="btn secondary" href="#kontakt">Verfügbarkeit prüfen</a>
+    </div>
+    <div class="product">
+      <div class="window">
+        <div class="window-top">
+          <i class="dot"></i><i class="dot"></i><i class="dot"></i>
+          <div class="tab">stardive / projekt-index.md</div>
+        </div>
+        <div class="workspace">
+          <aside class="side">
+            <div class="tree-head">PROJEKT INDEX</div>
+            ◢ websites<br>
+            　◈ vercel-sites<br>
+            　◈ reworks<br>
+            　◈ landingpages<br>
+            <br>
+            <span style="color:#d4d7ce">◈ projekt-index.md</span><br>
+            　◈ stardive-api<br>
+            　◈ ai-experimente
+          </aside>
+          <div class="code">
+            <span class="dim">1&nbsp; //</span> Die Seite wird zur Schaltzentrale<br>
+            <span class="dim">2</span><br>
+            <span class="dim">3&nbsp; </span><span class="pink">export default</span> <span class="green">function</span> <span class="blue">stardiveHub</span>() {<br>
+            <span class="dim">4&nbsp; </span>&nbsp;&nbsp;<span class="pink">const</span> sites = <span class="green">await</span> collectVercelLinks();<br>
+            <span class="dim">5&nbsp; </span>&nbsp;&nbsp;<span class="pink">return</span> publishWithContext(sites);<br>
+            <span class="dim">6&nbsp; </span>}
+          </div>
+          <aside class="assistant-panel">
+            <b>S T A R D I V E &nbsp; S T U D I O</b>
+            <div class="task"><span class="check">✓</span>Vercel-Links gesammelt</div>
+            <div class="task"><span class="check">✓</span>Screenshots kuratiert</div>
+            <div class="task">◌ Projektindex veröffentlichen...</div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="bundelt">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-label">Was STARDIVE bündelt</div>
+        <h2>Ein Hub für reale Projekte.</h2>
+      </div>
+      <p>Die Seite wird zur Schaltzentrale für veröffentlichte Websites, unfertige Experimente, Open-Source-Dev-Tools und visuelle Reworks.</p>
+    </div>
+    <div class="cards reveal">
+      <article class="card">
+        <h3>Website-Reworks</h3>
+        <p>Bestehende Seiten werden analysiert, visuell neu gedacht und als klare, schnelle Interfaces umgesetzt. Mit Vorher-Nachher-Vergleichen, sobald Material vorliegt.</p>
+        <div class="terminal">
+          <span class="prompt">›</span> locate "vorher/nachher"<br>
+          <span style="color:#d7d9d1">Found: visueller Sprung mit Kontext.</span><br>
+          <span class="prompt">›</span> _
+        </div>
+      </article>
+      <article class="card">
+        <h3>Dev-Tools & APIs</h3>
+        <p>STARDIVE sammelt eigene Werkzeuge wie die API, Files-Flows und Open-Source-Bausteine, die kleine Produkte schneller testbar machen.</p>
+        <div class="orb"></div>
+      </article>
+      <article class="card">
+        <h3>KI-gestützte Prototypen</h3>
+        <p>Modelle, Prompts und Bild-zu-Code-Workflows werden praktisch getestet: von Design-Inspirationen über GPT-Image-Mockups bis zu Vercel-Deployments.</p>
+        <div class="spark"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="arbeitsweise">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-label">Arbeitsweise</div>
+        <h2>Vom Entwurf zur <em>Veröffentlichung</em></h2>
+      </div>
+      <p>STARDIVE ist ein praktisches System aus Ideen, Repos, Vercel-Links, Screenshots und schnellen Iterationen — kein perfektes Archiv, sondern ein sichtbarer Hub.</p>
+    </div>
+    <div class="workflow reveal">
+      <article class="workflow-step">
+        <span class="workflow-num">01 — Sichten</span>
+        <h3>Sichten & sammeln</h3>
+        <p>GitHub-Repos, Vercel-Deployments, lokale Vibe-Sites und TL-Draw-Timelines werden zusammengeführt.</p>
+      </article>
+      <article class="workflow-step">
+        <span class="workflow-num">02 — Kuratieren</span>
+        <h3>Kuratiert zeigen</h3>
+        <p>Projekte bekommen Beschreibungen, Screenshots und Kontext: von Shard, Rio, Needs und Boss bis zu Prompt Study, LeLe und Ragtree.</p>
+      </article>
+      <article class="workflow-step">
+        <span class="workflow-num">03 — Liefern</span>
+        <h3>Rework liefern</h3>
+        <p>Website-Reworks und Neudesigns: visuell stark, schnell umgesetzt und dokumentiert — vom Altzustand zur neuen Seite.</p>
+      </article>
+    </div>
+    <div class="metrics-strip reveal">
+      <div class="metrics-strip-item"><div class="metric-val">GitHub</div><div class="metric-label">Quellprojekte</div></div>
+      <div class="metrics-strip-item"><div class="metric-val">Vercel</div><div class="metric-label">Live-Seiten</div></div>
+      <div class="metrics-strip-item"><div class="metric-val">AI</div><div class="metric-label">Design-Track</div></div>
+      <div class="metrics-strip-item"><div class="metric-val">cal.com</div><div class="metric-label">Termine</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="projekte">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-label">Projekt-Index</div>
+        <h2>Ausgewählte Projekte & Experimente</h2>
+      </div>
+      <p>Ein komprimierter Überblick über Vercel-Websites, Backend-APIs, KI-Modellstudien und Website-Reworks. Der Hub macht sichtbar, was schon existiert und was als Nächstes online gehört.</p>
+    </div>
+
+    <div class="filter-track reveal">
+      <div class="filter-bar" role="group" aria-label="Projekte filtern">
+        <button class="filter-btn is-active" type="button" data-filter="all">Alle Projekte</button>
+        <button class="filter-btn" type="button" data-filter="vercel">Vercel Websites</button>
+        <button class="filter-btn" type="button" data-filter="devtools">Dev-Tools & APIs</button>
+        <button class="filter-btn" type="button" data-filter="aiexperiments">KI-Experimente</button>
+        <button class="filter-btn" type="button" data-filter="reworks">Website Reworks</button>
+      </div>
+    </div>
+
+    <article class="featured reveal" id="featured-project" data-category="vercel">
+      <div class="featured-window">
+        <div class="featured-bar">
+          <i class="dot"></i><i class="dot"></i><i class="dot"></i>
+          <div class="tab">stardive / vercel-sites</div>
+        </div>
+        <div class="featured-img">
+          <img src="/assets/projects/reworks_redesigns.png" alt="Vercel Sites Directory" width="800" height="500" />
+          <span class="status-badge live">In Aufbau</span>
+        </div>
+      </div>
+      <div class="featured-body">
+        <div>
+          <span class="badge"><i></i> Hervorgehobenes Projekt</span>
+          <h3>Vercel Sites Directory</h3>
+          <p class="desc">Der geplante Einstiegspunkt für alle STARDIVE-Webprojekte.</p>
+          <p class="details">Die vorhandenen Vercel-Links werden gesammelt, geprüft und als Projekthub mit Screenshots, Kontext und klarer Navigation veröffentlicht. Ziel ist ein sauberer Überblick über Live-Seiten, Experimente und kommende Reworks.</p>
+          <div class="tags">
+            <span class="tag">Vercel Hub</span>
+            <span class="tag">Screenshots</span>
+            <span class="tag">Projektindex</span>
+            <span class="tag">Launch</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <div class="project-grid reveal" id="project-grid">
+      <article class="project-card" data-category="vercel">
+        <div class="thumb">
+          <img src="/assets/projects/shard_platform.png" alt="Shard Platform Redesign" loading="lazy" />
+          <span class="status-badge">Kandidat</span>
+        </div>
+        <div class="project-body">
+          <div class="tags"><span class="tag">Website Rework</span><span class="tag">Branding</span><span class="tag">Vercel</span></div>
+          <h4>Shard Platform Redesign</h4>
+          <p class="desc">Visuelle Studie und möglicher Rework für Shard.</p>
+          <p class="details">Shard gehört zu den Projekten, die auf der Seite mit Screenshots und Kontext sichtbar werden sollen. Der Fokus liegt auf klarerer Präsentation und einem präziseren Interface-Auftritt.</p>
+        </div>
+      </article>
+      <article class="project-card" data-category="devtools">
+        <div class="thumb">
+          <img src="/assets/projects/stardive_api.png" alt="STARDIVE API Gateway" loading="lazy" />
+          <span class="status-badge live">Aktiv</span>
+        </div>
+        <div class="project-body">
+          <div class="tags"><span class="tag">API & Backend</span><span class="tag">Files</span><span class="tag">Automation</span></div>
+          <h4>STARDIVE API Gateway</h4>
+          <p class="desc">Backend-Bausteine für Files, Projekte und Automatisierung.</p>
+          <p class="details">Die API bildet den technischen Unterbau für File-Flows, spätere Projektfeeds und kleine Automationen, die aus Experimenten nutzbare Werkzeuge machen.</p>
+        </div>
+      </article>
+      <article class="project-card" data-category="aiexperiments">
+        <div class="thumb">
+          <img src="/assets/projects/ragtree_tool.png" alt="Ragtree Semantik-Editor" loading="lazy" />
+          <span class="status-badge">Einordnen</span>
+        </div>
+        <div class="project-body">
+          <div class="tags"><span class="tag">AI Experimente</span><span class="tag">Tooling</span><span class="tag">Dev-Tool</span></div>
+          <h4>Ragtree Semantik-Editor</h4>
+          <p class="desc">Tool-Kandidat aus dem STARDIVE-Projektfundus.</p>
+          <p class="details">Das Ragtree-Tool ist eines der Projekte, die mit Screenshots, kurzem Nutzenversprechen und GitHub/Vercel-Kontext in den Hub gehören.</p>
+        </div>
+      </article>
+      <article class="project-card" data-category="vercel">
+        <div class="thumb">
+          <img src="/assets/projects/rio_portal.png" alt="Rio Management-Portal" loading="lazy" />
+          <span class="status-badge">Prüfen</span>
+        </div>
+        <div class="project-body">
+          <div class="tags"><span class="tag">Vercel Website</span><span class="tag">Portfolio</span><span class="tag">Rework</span></div>
+          <h4>Rio Management-Portal</h4>
+          <p class="desc">Bestehende Website mit Potenzial für bessere Präsentation.</p>
+          <p class="details">Rio ist eines der Vercel-Projekte, die im neuen Index nicht nur verlinkt, sondern visuell erklärt und sauber eingeordnet werden sollen.</p>
+        </div>
+      </article>
+      <article class="project-card" data-category="vercel">
+        <div class="thumb">
+          <img src="/assets/projects/needs_app.png" alt="Needs App Mobile Portal" loading="lazy" />
+          <span class="status-badge">Prüfen</span>
+        </div>
+        <div class="project-body">
+          <div class="tags"><span class="tag">Mobile UI</span><span class="tag">Vercel Website</span><span class="tag">Produktidee</span></div>
+          <h4>Needs App Mobile Portal</h4>
+          <p class="desc">Mobile-orientierter Projektkandidat für den Hub.</p>
+          <p class="details">Needs soll als visuelles Beispiel für kleinere Produktideen und mobile Interfaces auftauchen, sobald die vorhandenen Deployments und Screenshots sortiert sind.</p>
+        </div>
+      </article>
+      <article class="project-card" data-category="devtools">
+        <div class="thumb">
+          <img src="/assets/projects/boss_dashboard.png" alt="Boss Dashboard" loading="lazy" />
+          <span class="status-badge">Einordnen</span>
+        </div>
+        <div class="project-body">
+          <div class="tags"><span class="tag">Dev-Tools</span><span class="tag">Dashboard</span><span class="tag">GitHub</span></div>
+          <h4>Boss Dashboard</h4>
+          <p class="desc">Dashboard-Projekt aus dem lokalen/Vercel-Bestand.</p>
+          <p class="details">Boss gehört zu den Projekten, die als Screenshots und kurze Fallstudien in den Projekthub aufgenommen werden sollen.</p>
+        </div>
+      </article>
+      <article class="project-card" data-category="aiexperiments">
+        <div class="thumb">
+          <img src="/assets/projects/prompt_study.png" alt="Prompt-Engineering Labor" loading="lazy" />
+          <span class="status-badge live">Aktiv</span>
+        </div>
+        <div class="project-body">
+          <div class="tags"><span class="tag">AI Experimente</span><span class="tag">Prompt Study</span><span class="tag">Modelle</span></div>
+          <h4>Prompt-Engineering Labor</h4>
+          <p class="desc">Prompt Study und Modellnotizen aus der Praxis.</p>
+          <p class="details">Der KI-Track sammelt Erfahrungen mit Modellen, Prompts, Bild-Workflows und Code-Agenten, soweit sie für reale Website- und Tool-Arbeit relevant sind.</p>
+        </div>
+      </article>
+      <article class="project-card" data-category="vercel">
+        <div class="thumb">
+          <img src="/assets/projects/shard_logo_subject.png" alt="Shard Logo-Studie" loading="lazy" />
+          <span class="status-badge">Material</span>
+        </div>
+        <div class="project-body">
+          <div class="tags"><span class="tag">Design Studie</span><span class="tag">Branding</span><span class="tag">Visuals</span></div>
+          <h4>Shard Logo-Studie</h4>
+          <p class="desc">Branding-Material für Shard und verwandte Seiten.</p>
+          <p class="details">Design-Assets und visuelle Richtungen können später in einer Inspirations- oder Redesign-Unterseite gebündelt werden.</p>
+        </div>
+      </article>
+      <article class="project-card" data-category="aiexperiments">
+        <div class="thumb">
+          <img src="/assets/projects/claude_design_appstore.png" alt="Claude UI Appstore Mockup" loading="lazy" />
+          <span class="status-badge">Referenz</span>
+        </div>
+        <div class="project-body">
+          <div class="tags"><span class="tag">AI Experimente</span><span class="tag">UI-Konzept</span><span class="tag">Inspiration</span></div>
+          <h4>Claude UI Appstore Mockup</h4>
+          <p class="desc">UI-Inspiration für KI-native Produktoberflächen.</p>
+          <p class="details">Solche visuellen Referenzen helfen, Reworks schneller vorzudenken, bevor ein KI- oder Code-Agent die Oberfläche in Code überführt.</p>
+        </div>
+      </article>
+      <article class="project-card" data-category="reworks">
+        <div class="thumb">
+          <img src="/assets/projects/lele_landingpage.png" alt="LeLe Portal Rework" loading="lazy" />
+          <span class="status-badge">Kandidat</span>
+        </div>
+        <div class="project-body">
+          <div class="tags"><span class="tag">Website Rework</span><span class="tag">Landingpage</span><span class="tag">Vergleich</span></div>
+          <h4>LeLe Portal Rework</h4>
+          <p class="desc">Website-Rework-Kandidat mit eigener Projektseite.</p>
+          <p class="details">LeLe ist eines der Beispiele, die sich für einen Vorher-Nachher-Vergleich und ein sauberes Neudesign eignen.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="kontakt">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-label">Verfügbarkeit</div>
+        <h2>Kontakt & <em>Start</em></h2>
+      </div>
+      <p>STARDIVE soll von Anfang an erreichbar sein: für schnelle Website-Reworks, neue Landingpages, experimentelle Tools und visuelle Prototypen.</p>
+    </div>
+
+    <div class="contact-layout reveal">
+      <div class="protocol-panel">
+        <h3>So starten wir</h3>
+        <div class="protocol-steps">
+          <div class="step">
+            <div class="step-num">01</div>
+            <div>
+              <h4>Kurzbriefing</h4>
+              <p>Wir klären, ob es um ein Rework, eine neue Landingpage, einen Prototypen oder ein kleines Dev-Tool geht. Der Einstieg bleibt bewusst direkt.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">02</div>
+            <div>
+              <h4>Visueller Entwurf</h4>
+              <p>Vorhandene Seiten, Design-Inspirationen und gewünschte Wirkung werden zu einer klaren Richtung verdichtet. Bei Bedarf entstehen zuerst Bild-Mockups.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">03</div>
+            <div>
+              <h4>Build & Deployment</h4>
+              <p>Die Seite wird in Code umgesetzt, responsiv geprüft und auf Vercel oder in der passenden Umgebung bereitgestellt.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">04</div>
+            <div>
+              <h4>Übergabe</h4>
+              <p>Am Ende stehen ein sichtbares Ergebnis, ein nachvollziehbarer Stand im Repo und klare nächste Schritte für Erweiterungen oder weitere Reworks.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="specs-panel">
+        <div class="specs-header">
+          <h3>Praktische Eckdaten</h3>
+          <span>stardive / specs.md</span>
+        </div>
+        <div class="specs-body">
+          <div class="spec-line"><span class="label">Startpunkt</span><span class="value">Website-Rework</span></div>
+          <div class="spec-line"><span class="label">Stack</span><span class="value">HTML / Vercel</span></div>
+          <div class="spec-line"><span class="label">Projektbasis</span><span class="value">GitHub + Screenshots</span></div>
+          <div class="spec-line"><span class="label">Designhilfe</span><span class="value">GPT Image / KI-Tools</span></div>
+          <div class="spec-line"><span class="label">Kontakt</span><span class="value">E-Mail / Telegram</span></div>
+          <div class="spec-line"><span class="label">Termine</span><span class="value">cal.com</span></div>
+          <span class="prompt">› _</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="brand footer-brand">
+    <img class="mark" src="/assets/stardive-mark.svg" width="27" height="27" alt="" />
+    stardive
+  </div>
+  <span class="footer-tagline">Gebaut für Projekte mit Ziel</span>
+  <div class="footer-end">
+    <div class="footer-links">
+      <a href="#">Twitter</a>
+      <a href="#">GitHub</a>
+      <a href="#">Discord</a>
+    </div>
+    <span>© 2026 STARDIVE Studio</span>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(({ isIntersecting, target }) => {
+      if (isIntersecting) { target.classList.add('is-visible'); observer.unobserve(target); }
+    });
+  }, { threshold: 0.14 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  const nav = document.querySelector('nav');
+  const updateNav = () => nav.classList.toggle('is-floating', window.scrollY > 18);
+  updateNav();
+  window.addEventListener('scroll', updateNav, { passive: true });
+
+  const menuBtn = document.querySelector('.menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  menuBtn.addEventListener('click', () => {
+    const open = mobileMenu.classList.toggle('is-open');
+    mobileMenu.hidden = !open;
+    menuBtn.setAttribute('aria-expanded', open);
+  });
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('is-open');
+      mobileMenu.hidden = true;
+      menuBtn.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const projectCards = document.querySelectorAll('.project-card');
+  const featured = document.getElementById('featured-project');
+
+  projectCards.forEach((card, i) => {
+    const index = document.createElement('span');
+    index.className = 'project-index';
+    index.textContent = String(i + 1).padStart(2, '0');
+    card.querySelector('.thumb').prepend(index);
+  });
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      filterBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+      featured.classList.toggle('is-hidden', filter !== 'all');
+      projectCards.forEach(card => {
+        const show = filter === 'all' || card.dataset.category === filter;
+        card.classList.toggle('is-hidden', !show);
+      });
+    });
+  });
+</script>
+</body>
 </html>
