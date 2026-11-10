@@ -1,3 +1,158 @@
-# stardive
+# Stardive
 
-> for future projects
+![A glass prism splitting a beam of light into a rainbow](.github/hero.png)
+
+Stardive is a landing page built around a glass prism that splits a beam of light into an animated
+rainbow, rendered on WebGPU with [vgpu](https://vgpu.sh) as the only rendering dependency. Live at
+[stardive.io](https://stardive.io).
+
+It rebuilds the three.js scene at [v-prism.vercel.app](https://v-prism.vercel.app) with Next.js 16
+(App Router, Turbopack), TypeScript and WGSL. No three.js, no other GPU library: `npm ls three`
+reports nothing.
+
+Click or drag to aim a light beam at a glass tetrahedron; it disperses into an animated rainbow.
+
+| Input | Does |
+| --- | --- |
+| Click / drag, one finger | Aim the beam |
+| Scroll | Tilt and turn the glass |
+| ⌥ + scroll | Spin it in the screen plane |
+| Pinch, ⌘/Ctrl + scroll | Zoom (0.4x to 4x) |
+| Two fingers on touch | Drag to tilt/turn, twist to spin, pinch to zoom |
+| `src/config.ts` | Scene preset, light, glass and motion values |
+
+The scene has no in-page control panel. Tune it in [`src/config.ts`](src/config.ts), which also holds
+the site name, copy, navigation and footer. The action button enters a distraction-free view; press
+Escape or the Exit button to return to the landing page.
+
+```bash
+npm install
+npm run dev
+npm run build && npm start
+```
+
+Needs a browser with WebGPU: current Chrome, Edge and Safari 26 on desktop, Safari on iOS 26,
+Chrome on Android 12+, Firefox 141+ on Windows. Without it the page shows a still frame from the
+renderer and says why: the browser has no WebGPU, WebGPU is switched off for the GPU, the page is
+not a secure origin, or the renderer hit an error (shown as is).
+
+WebGPU only exists on secure origins, so a phone opening the dev server by LAN IP
+(`http://192.168.x.x:3000`) never gets it. Test phones on a deployment instead: every push gets
+an HTTPS preview URL.
+
+## How it renders
+
+Everything is a `draw()` or `effect()` from vgpu, encoded into one `frame()` per tick:
+
+| Pass | Target | Draws |
+| --- | --- | --- |
+| Scene | `scene` (rgba16float) | background clear, up to two rainbow quads (premultiplied), the beam streak (additive); this is what the glass refracts |
+| Mirror | 5 levels, 1/2 to 1/32 res | the frame without glints (scene, beam glows, flare, glass), then a 13-tap downsample chain; this is what the glass reflects |
+| Glass | `lit` (rgba16float, 4x MSAA) | copy of `scene`, beam glows and lens flare (additive), the glass, which covers them, then its glints (additive) |
+| Bloom | 9 half-res levels | `smoothstep(1, 2, luminance)` threshold, 13-tap downsample chain, tent upsample mixed at 0.85 per level |
+| Present | canvas | `lit` + bloom, clipped, through the F-6800 film LUT (a 33³ `texture_3d`), to sRGB |
+
+The glass shader refracts the beam plane into the `scene` texture in screen space (Snell through
+the glass thickness, three wavelengths for a hint of dispersion, a jittered disk for roughness),
+reflects a procedural studio evaluated analytically per direction (a gradient dome plus soft
+panels; the light preset uses the original three softboxes), and mixes them with a dielectric
+Fresnel plus a clearcoat term. There is no tone mapping, which is what the original pipeline did:
+it clipped, applied the LUT, and encoded to sRGB.
+
+The glints port the WebGL build's screen-space reflections, which gave the glass its grainy
+rainbow sheen. Each glass pixel bends its normal by a jitter of 0.7, steps half a unit along the
+reflected ray, and reads the blurred mirror there, with the reflection's own Fresnel (IOR 2.09),
+then squares the result at intensity 2.5, as the original did. The original averaged hundreds of
+jittered rays over time; here eight stratified rays read an already blurred level, which gives
+the same soft glow and fine grain in a single frame with no history. The mirror level follows the
+pixel density, so the glow keeps its size on a phone, at 1x or 2x, and at any zoom. The light
+preset turns them off, as the original did.
+
+The glass itself is built analytically: four flat faces, six cylindrical fillets and four
+spherical corner caps that share their seam points, so the mesh is watertight and has no sliver
+triangles along the rounded edges.
+
+Glare matches the original lens-flare textures without shipping them: `shaders/glare.wgsl`
+holds each texture's measured brightness curve (radial for the glows and flare dots, along and
+across for the streak), and every sprite quad is cropped to where its curve is non-zero, so
+nothing ever ends in a visible square. Glare lives in the lens, not the scene, so the flare and
+the beam's glint and width keep their on-screen size at any zoom; like the original, the glass
+hides whatever glare falls behind it.
+
+### Real light
+
+The Dark and Light presets keep the original's stylised rainbow. The Real preset replaces it with
+traced light:
+
+- **Glass.** A dense flint with n = 1.6 at the sodium D line and SF11's dispersion curve from its
+  Sellmeier equation (Abbe number about 20). SF11 itself (n = 1.785) is so dense that a 60° prism
+  totally reflects almost every beam; this keeps the physics and gives the spectrum room to exist.
+- **Rays.** The beam enters the prism's live outline, and 32 wavelengths from 390 to 700 nm each
+  refract by Snell's law. At every face a ray either reflects totally or splits by Fresnel's
+  equations into light that leaves and a ghost that stays inside, up to four bounces. The reflection
+  off the entry face and the ghosts are drawn too.
+- **Beams in haze.** Every beam and every wavelength is a Gaussian beam that widens slightly and dims
+  as it spreads, so the colours overlap into white at the exit face and separate with distance.
+- **Colour.** Each wavelength's colour comes from the CIE 1931 observer (the Wyman, Sloan and
+  Shirley fit) under 6504 K daylight, converted to Rec.709 and white-balanced. Spectral colours sit
+  outside sRGB, so the present pass clips them and pulls their luminance halfway back to the true
+  value, which keeps violet dim the way a camera records it, then tone maps with AgX instead of the
+  film LUT.
+
+The beam rests at minimum deviation, rising into the prism with the spectrum falling out of it.
+Aim anywhere else and the physics decides: most angles totally reflect inside and leave as white
+light, and only the right ones throw a spectrum.
+
+The camera is an orthographic, pixel-space camera sized in CSS pixels (50 / 70 / 100 px per
+world unit by breakpoint, times the zoom); render targets follow the device pixel size, so a
+2x display renders at 2x without changing the framing. On resize every offscreen target is
+resized in place with vgpu's `target.resize()`; bindings made with the target follow
+automatically, so nothing is ever destroyed or rebound mid-flight.
+
+Every pipeline is compiled at load against the exact target it draws into (format and sample
+count), as vgpu recommends, so a GPU that rejects one fails before the first frame and lands on
+the fallback with the pass name and the GPU's own message. The shaders avoid pipeline-overridable
+constants: Safari 26 cannot build the vertex function of a module compiled with one set
+(`Vertex library failed creation`), so the beam's line mode is a uniform instead.
+
+Rendering is on demand. The frame loop stops when nothing is animating; the idle drift keeps it
+alive by default, and `prefers-reduced-motion` turns the drift off.
+
+## Layout
+
+```
+src/app/                    Next.js shell: layout, page, landing UI, global styles
+src/config.ts               Site copy, navigation, footer and scene values
+src/prism/index.tsx         client component: canvas, pointer overlay, hint
+src/prism/simulation.ts     per-tick state: aim, hit, rotation + drift, rainbow beams, fades
+src/prism/render/renderer.ts  vgpu context, surface, frame scheduling, resize, uniform writes
+src/prism/render/passes/    one WGSL file per pass and the TypeScript that binds it
+src/prism/render/shaders/   shared WGSL modules: studio environment, spectrum, glare curves
+src/prism/render/targets.ts render targets and the bloom chain
+src/prism/render/light.ts   packs traced light into the light pass's uniforms
+src/prism/render/lut.ts     KTX2 reader for the film LUT
+src/prism/render/support.ts why WebGPU is unavailable, when it is
+src/prism/geometry/         rounded regular tetrahedron, its 24 symmetries, screen-space outline
+src/prism/optics/           symmetric rainbow optics, drift, and the Real preset's spectrum and ray tracer
+src/prism/math/             vec3, quat, mat4, angles, 2D convex hull
+src/prism/state/            small store + settings and prism state (used by React and the renderer)
+src/prism/ui/               hint and still-frame fallback
+src/prism/pointer.ts        aim and rotate gestures
+```
+
+Shaders are validated with `npx vgpu check src/prism/render/passes/<pass>.wgsl`. Visual checks
+use [agent-browser](https://github.com/vercel-labs/agent-browser) with real WebGPU:
+
+```bash
+agent-browser --session prism --webgpu open http://localhost:3000
+agent-browser --session prism --webgpu set viewport 1440 900 2
+agent-browser --session prism --webgpu reload && agent-browser --session prism --webgpu wait 6000
+agent-browser --session prism --webgpu screenshot prism.png
+agent-browser --session prism --webgpu errors
+```
+
+## Credits
+
+The pmndrs [`nextjs-prism`](https://github.com/pmndrs/examples/tree/main/examples/nextjs-prism)
+example (MIT) for the concept and the film LUT, AlanZucconi's spectral rainbow and JuliaPoo's
+iridescence for the rainbow shader.

@@ -1,0 +1,84 @@
+import { scene } from "@/config";
+import { createStore } from "./store";
+
+export interface Settings {
+  readonly background: string;
+  readonly tint: string;
+  readonly ambient: number;
+  readonly rainbow: number;
+  readonly bloom: number;
+  readonly reflections: number;
+  readonly glints: number;
+  readonly roughness: number;
+  readonly ior: number;
+  readonly thickness: number;
+  readonly drift: number;
+  readonly physical: boolean;
+  readonly dispersion: number;
+}
+
+export const DARK: Settings = {
+  background: "#000000",
+  tint: "#ffffff",
+  ambient: 0.015,
+  rainbow: 2.5,
+  bloom: 0.9,
+  reflections: 1,
+  glints: 2.5,
+  roughness: 0,
+  ior: 1.5,
+  thickness: 0.9,
+  drift: 1,
+  physical: false,
+  dispersion: 1,
+};
+
+export const LIGHT: Settings = { ...DARK, background: "#ffffff", reflections: 1, glints: 0 };
+
+export const REAL: Settings = {
+  ...DARK,
+  physical: true,
+  ior: 1.6,
+  rainbow: 3,
+  bloom: 0.45,
+  reflections: 0.3,
+};
+
+const PRESETS = { dark: DARK, light: LIGHT, real: REAL } as const;
+
+export const settings = createStore<Settings>({
+  ...PRESETS[scene.preset],
+  background: scene.glass.background,
+  tint: scene.glass.tint,
+  ambient: scene.light.ambient,
+  rainbow: scene.light.rainbow,
+  bloom: scene.light.bloom,
+  reflections: scene.glass.reflections,
+  glints: scene.glass.glints,
+  roughness: scene.glass.roughness,
+  ior: scene.glass.refraction,
+  thickness: scene.glass.thickness,
+  drift: scene.motion.drift,
+});
+
+export function isLight(hex: string): boolean {
+  const [r, g, b] = rgb(hex);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.5;
+}
+
+export function rgb(hex: string): [number, number, number] {
+  const value = parseInt(hex.slice(1), 16);
+  return [(value >> 16) & 255, (value >> 8) & 255, value & 255].map((c) => c / 255) as [
+    number,
+    number,
+    number,
+  ];
+}
+
+export function linear(hex: string): [number, number, number] {
+  return rgb(hex).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)) as [
+    number,
+    number,
+    number,
+  ];
+}
